@@ -588,7 +588,7 @@ export const AdvancedTable = ({ limit }: { limit?: number }) => {
                 </tr>
               </thead>
               <tbody>
-                {loading && (
+                {loading && commoditiesData.length === 0 && (
                   <tr>
                     <td colSpan={10} className="p-8 text-center text-[#D4AF37]">
                       <div className="flex flex-col items-center justify-center gap-3">
@@ -598,7 +598,7 @@ export const AdvancedTable = ({ limit }: { limit?: number }) => {
                     </td>
                   </tr>
                 )}
-                {error && !loading && (
+                {error && !loading && commoditiesData.length === 0 && (
                   <tr>
                     <td colSpan={10} className="p-8 text-center text-red-500">
                       <div className="flex flex-col items-center justify-center gap-3 bg-red-500/10 p-6 rounded-xl border border-red-500/20">
@@ -608,7 +608,7 @@ export const AdvancedTable = ({ limit }: { limit?: number }) => {
                     </td>
                   </tr>
                 )}
-                {!loading && !error && paginatedData.length === 0 && (
+                {(!loading || commoditiesData.length > 0) && !error && paginatedData.length === 0 && (
                   <tr>
                     <td colSpan={10} className="p-8 text-center text-gray-400">
                       <div className="flex flex-col items-center justify-center gap-3">
@@ -618,7 +618,7 @@ export const AdvancedTable = ({ limit }: { limit?: number }) => {
                     </td>
                   </tr>
                 )}
-                {!loading && !error && paginatedData.map((item, index) => {
+                {(!loading || commoditiesData.length > 0) && !error && paginatedData.map((item, index) => {
                   const changePct = Number(item.changePercent) || 0;
                   const isUp = changePct > 0;
                   const isDown = changePct < 0;
@@ -727,19 +727,19 @@ export const AdvancedTable = ({ limit }: { limit?: number }) => {
 
           {/* Mobile Card View */}
           <div className="md:hidden max-h-[600px] overflow-y-auto p-4 space-y-4">
-            {loading && (
+            {loading && commoditiesData.length === 0 && (
               <div className="p-8 text-center text-[#D4AF37] flex flex-col items-center gap-2">
                  <div className="w-8 h-8 rounded-full border-2 border-[#D4AF37] border-t-transparent animate-spin"></div>
                  <p>{language === 'ar' ? 'جاري التحميل...' : 'Loading...'}</p>
               </div>
             )}
-            {error && !loading && (
+            {error && !loading && commoditiesData.length === 0 && (
                <div className="p-6 text-center text-red-500 bg-red-500/10 rounded-xl border border-red-500/20">
                   <AlertCircle size={32} className="mx-auto mb-2" />
                   <p>{language === 'ar' ? 'خطأ: ' : 'Error: '}{error}</p>
                </div>
             )}
-            {!loading && !error && filteredAndSortedData.map((item) => {
+            {(!loading || commoditiesData.length > 0) && !error && filteredAndSortedData.map((item) => {
               const changePct = Number(item.changePercent) || 0;
               const isUp = changePct > 0;
               const isDown = changePct < 0;

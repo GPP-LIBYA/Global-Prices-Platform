@@ -27,15 +27,15 @@ interface SiteSettings {
 }
 
 const defaultSettings: SiteSettings = {
-  siteNameAr: 'منصة تسعير السلع العالمية',
-  siteNameEn: 'Global Commodities Platform',
+  siteNameAr: 'منصة الأسعار العالمية GCP',
+  siteNameEn: 'Global Pricing Platform',
   descriptionAr: 'المنصة الرائدة لتتبع أسعار السلع والمعادن العالمية لحظة بلحظة مع تحليلات دقيقة وتقارير حصرية.',
   descriptionEn: 'The leading platform for tracking global commodity and metal prices in real-time with accurate analytics and exclusive reports.',
   siteLogo: 'https://i.postimg.cc/vTzC2Jbx/January-05-2026-1-removebg-preview.png',
   faviconUrl: '/favicon.ico',
   isSiteActive: true,
   maintenanceTitleAr: 'وضع الصيانة',
-  maintenanceMessageAr: 'نعمل حاليًا على تحديث منصة الأسعار العالمية، يرجى العودة لاحقًا.',
+  maintenanceMessageAr: 'نعمل حاليًا على تحديث منصة الأسعار العالمية GCP، يرجى العودة لاحقًا.',
   contactEmail: 'info@globalprices.com',
   contactPhone: '+1 234 567 890',
   contactAddressAr: 'شارع المال والأعمال، الطابق 15، لندن، المملكة المتحدة',
@@ -43,8 +43,8 @@ const defaultSettings: SiteSettings = {
   facebookUrl: '#',
   linkedinUrl: '#',
   twitterUrl: '#',
-  footerTextAr: '© 2026 منصة الأسعار العالمية. جميع الحقوق محفوظة.',
-  footerTextEn: '© 2026 World Prices Platform. All rights reserved.',
+  footerTextAr: '© 2026 منصة الأسعار العالمية GCP. جميع الحقوق محفوظة.',
+  footerTextEn: '© 2026 Global Pricing Platform. All rights reserved.',
   disclaimerAr: 'جميع البيانات والتحاليل المقدمة في هذه المنصة هي لأغراض إعلامية فقط ولا تعتبر نصيحة استثمارية.',
   privacyPolicyAr: 'نحن نلتزم بحماية خصوصية بياناتك ومعلوماتك الشخصية.',
   termsAr: 'باستخدامك لهذه المنصة، فإنك توافق على الالتزام بشروط الاستخدام المعمول بها.',
@@ -179,9 +179,19 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       document.getElementsByTagName('head')[0].appendChild(newLink);
     }
     
-    // Update document title
-    const lang = document.documentElement.lang || 'ar';
-    document.title = lang === 'ar' ? settings.siteNameAr : settings.siteNameEn;
+    // Update document title dynamically based on HTML lang
+    const updateTitle = () => {
+      const lang = document.documentElement.lang || 'ar';
+      document.title = lang === 'ar' ? settings.siteNameAr : settings.siteNameEn;
+    };
+    
+    updateTitle();
+
+    // Observe documentElement lang attribute changes
+    const observer = new MutationObserver(updateTitle);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+
+    return () => observer.disconnect();
   }, [settings.siteNameAr, settings.siteNameEn, settings.faviconUrl]);
 
   return (

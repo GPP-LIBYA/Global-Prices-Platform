@@ -49,7 +49,7 @@ export const TopCommodities = () => {
     return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   };
   
-  if (loading) {
+  if (loading && data.length === 0) {
     return (
       <section className="py-12 bg-[#0A1128]">
         <div className="container mx-auto px-4">

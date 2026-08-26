@@ -106,7 +106,7 @@ export const exportChartToPNG = async ({
     
     footer.innerHTML = `
       <div style="text-align: left;" dir="ltr">
-        <span style="font-weight: bold; color: ${textColor};">Source:</span> Global Prices Platform (GCP)
+        <span style="font-weight: bold; color: ${textColor};">Source:</span> Global Pricing Platform (GCP)
       </div>
       <div style="text-align: right;" dir="ltr">
         <span style="margin-right: 15px;">Generated on: ${dateTimeStr}</span>

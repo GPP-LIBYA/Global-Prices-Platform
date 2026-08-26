@@ -1,8 +1,8 @@
 export const translations = {
   ar: {
     // Header
-    platformName: 'منصة الأسعار العالمية',
-    platformSub: 'GLOBAL PRICES PLATFORM',
+    platformName: 'منصة الأسعار العالمية GCP',
+    platformSub: 'GLOBAL PRICING PLATFORM',
     home: 'الرئيسية',
     markets: 'الأسواق',
     analytics: 'التحليلات',
@@ -216,8 +216,8 @@ export const translations = {
   },
   en: {
     // Header
-    platformName: 'Global Prices',
-    platformSub: 'GLOBAL PRICES PLATFORM',
+    platformName: 'Global Pricing Platform',
+    platformSub: 'GLOBAL PRICING PLATFORM',
     home: 'Home',
     markets: 'Markets',
     analytics: 'Analytics',

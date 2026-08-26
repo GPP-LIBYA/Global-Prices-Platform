@@ -108,7 +108,7 @@ export const AccessRestricted = () => {
 
         <div className="mt-12 pt-12 border-t border-[#1C2E5A]">
            <p className="text-[10px] text-gray-600 font-black uppercase tracking-[0.3em]">
-             {language === 'ar' ? 'منصة الأسعار العالمية - قسم التحليل الفني' : 'World Prices Platform - Technical Analysis Division'}
+             {language === 'ar' ? 'منصة الأسعار العالمية GCP - قسم التحليل الفني' : 'Global Pricing Platform - Technical Analysis Division'}
            </p>
         </div>
       </motion.div>

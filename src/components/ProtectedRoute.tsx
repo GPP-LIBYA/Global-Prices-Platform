@@ -8,10 +8,10 @@ export const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ childr
   const { user, platformUser, authLoading, platformUserLoading } = useAuth();
 
   // If settings are still loading, show a clean fast spinner to prevent flashing
-  if (settingsLoading) {
+  if (settingsLoading || authLoading) {
     return (
-      <div className="min-h-screen bg-[#050A18] flex items-center justify-center">
-        <div className="w-16 h-16 border-4 border-[#1C2E5A] border-t-[#D4AF37] rounded-full animate-spin"></div>
+      <div className="min-h-[50vh] flex items-center justify-center py-20">
+        <div className="w-12 h-12 border-4 border-[#1C2E5A] border-t-[#D4AF37] rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -23,10 +23,10 @@ export const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ childr
   }
 
   // When auth_ui_enabled is true, auth and approval restrictions are strictly enforced
-  if (authLoading || platformUserLoading) {
+  if (platformUserLoading && !platformUser) {
     return (
-      <div className="min-h-screen bg-[#050A18] flex items-center justify-center">
-        <div className="w-16 h-16 border-4 border-[#1C2E5A] border-t-[#D4AF37] rounded-full animate-spin"></div>
+      <div className="min-h-[50vh] flex items-center justify-center py-20">
+        <div className="w-12 h-12 border-4 border-[#1C2E5A] border-t-[#D4AF37] rounded-full animate-spin"></div>
       </div>
     );
   }

@@ -14,12 +14,13 @@ import { ScrollToTop } from './components/ScrollToTop';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { useVisitorTracking } from './hooks/useVisitorTracking';
 
-const Home = lazy(() => import('./pages/Home').then(m => ({ default: m.Home })));
+import { Home } from './pages/Home';
+import { Auth } from './pages/Auth';
+
 const Markets = lazy(() => import('./pages/Markets').then(m => ({ default: m.Markets })));
 const Analytics = lazy(() => import('./pages/Analytics').then(m => ({ default: m.Analytics })));
 const News = lazy(() => import('./pages/News').then(m => ({ default: m.News })));
 const Reports = lazy(() => import('./pages/Reports').then(m => ({ default: m.Reports })));
-const Auth = lazy(() => import('./pages/Auth').then(m => ({ default: m.Auth })));
 const ResetPassword = lazy(() => import('./pages/ResetPassword').then(m => ({ default: m.ResetPassword })));
 const LegalPage = lazy(() => import('./pages/LegalPage').then(m => ({ default: m.LegalPage })));
 const Contact = lazy(() => import('./pages/Contact').then(m => ({ default: m.Contact })));
@@ -133,7 +134,7 @@ const MaintenanceMode = () => {
           {language === 'ar' ? (settings.maintenanceTitleAr || 'الموقع تحت الصيانة') : 'Site Under Maintenance'}
         </h1>
         <p className="text-gray-400 text-lg leading-relaxed font-bold">
-          {language === 'ar' ? (settings.maintenanceMessageAr || 'نعمل حاليًا على تحديث منصة الأسعار العالمية يرجى العودة لاحقًا') : 'We are currently updating the global pricing platform, please check back later'}
+          {language === 'ar' ? (settings.maintenanceMessageAr || 'نعمل حاليًا على تحديث منصة الأسعار العالمية GCP، يرجى العودة لاحقًا.') : 'We are currently updating the Global Pricing Platform, please check back later.'}
         </p>
       </div>
     </div>
@@ -142,8 +143,8 @@ const MaintenanceMode = () => {
 
 const AppRoutes = () => {
   const LoadingFallback = () => (
-    <div className="min-h-screen bg-[#050A18] flex items-center justify-center">
-      <div className="w-16 h-16 border-4 border-[#1C2E5A] border-t-[#D4AF37] rounded-full animate-spin"></div>
+    <div className="min-h-[50vh] flex items-center justify-center py-20">
+      <div className="w-12 h-12 border-4 border-[#1C2E5A] border-t-[#D4AF37] rounded-full animate-spin"></div>
     </div>
   );
 

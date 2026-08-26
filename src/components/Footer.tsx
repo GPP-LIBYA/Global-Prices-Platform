@@ -13,8 +13,8 @@ export const Footer = () => {
     disclaimer: {
       titleAr: 'إخلاء المسؤولية',
       titleEn: 'Disclaimer',
-      contentAr: settings.disclaimerAr || 'البيانات والأسعار المنشورة في منصة الأسعار العالمية مخصصة لأغراض المتابعة والتحليل فقط، ولا تُعد توصية استثمارية أو تجارية. قد تختلف الأسعار حسب المصدر ووقت التحديث، ولا تتحمل المنصة أي مسؤولية عن القرارات المتخذة بناءً على هذه البيانات.',
-      contentEn: 'The data and prices published on the Global Prices Platform are for monitoring and analysis purposes only and do not constitute investment or commercial advice. Prices may vary by source and time of update, and the platform bears no responsibility for decisions made based on this data.'
+      contentAr: settings.disclaimerAr || 'البيانات والأسعار المنشورة في منصة الأسعار العالمية GCP مخصصة لأغراض المتابعة والتحليل فقط، ولا تُعد توصية استثمارية أو تجارية. قد تختلف الأسعار حسب المصدر ووقت التحديث، ولا تتحمل المنصة أي مسؤولية عن القرارات المتخذة بناءً على هذه البيانات.',
+      contentEn: 'The data and prices published on the Global Pricing Platform are for monitoring and analysis purposes only and do not constitute investment or commercial advice. Prices may vary by source and time of update, and the platform bears no responsibility for decisions made based on this data.'
     },
     terms: {
       titleAr: 'شروط الاستخدام',

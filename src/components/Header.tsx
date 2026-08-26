@@ -158,7 +158,9 @@ export const Header = () => {
               );
             }
 
-            if (platformUserLoading) {
+            const companyDisplayName = platformUser?.full_name || user?.user_metadata?.full_name || (language === 'ar' ? 'المستخدم' : 'User');
+
+            if (platformUserLoading && !companyDisplayName) {
               return (
                 <div className="flex items-center gap-3">
                   <div className="flex items-center gap-2 bg-[#121E3D] border border-[#1C2E5A] px-3 py-2 rounded-xl">
@@ -177,8 +179,6 @@ export const Header = () => {
                 </div>
               );
             }
-
-            const companyDisplayName = platformUser?.full_name || user?.user_metadata?.full_name || (language === 'ar' ? 'المستخدم' : 'User');
 
             return (
               <div className="flex items-center gap-2 sm:gap-3">

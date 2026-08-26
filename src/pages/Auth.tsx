@@ -66,16 +66,10 @@ export const Auth = () => {
       const email = await generateInternalEmail(rawName, cleanedPhone);
 
       if (authState === 'login') {
-        const start = Date.now();
         const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
           email,
           password: formData.password
         });
-
-        const elapsed = Date.now() - start;
-        if (elapsed < 1000) {
-          await new Promise(resolve => setTimeout(resolve, 1000 - elapsed));
-        }
         
         if (authError || !authData.user) {
           throw new Error(language === 'ar' ? 'بيانات الدخول غير صحيحة.' : 'Invalid sign-in credentials.');

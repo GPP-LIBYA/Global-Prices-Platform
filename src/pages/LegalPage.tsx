@@ -77,7 +77,7 @@ export const LegalPage = () => {
 
           <div className="mt-20 pt-12 border-t border-[#1C2E5A]">
             <p className="text-[10px] text-gray-600 font-black uppercase tracking-[0.4em] text-center">
-              {language === 'ar' ? 'منصة الأسعار العالمية - المكتب القانوني' : 'World Prices Platform - Legal Division'}
+              {language === 'ar' ? 'منصة الأسعار العالمية GCP - المكتب القانوني' : 'Global Pricing Platform - Legal Division'}
             </p>
           </div>
         </motion.div>
