@@ -27,50 +27,6 @@ const Contact = lazy(() => import('./pages/Contact').then(m => ({ default: m.Con
 const FAQ = lazy(() => import('./pages/FAQ').then(m => ({ default: m.FAQ })));
 const ServicesPage = lazy(() => import('./pages/ServicesPage').then(m => ({ default: m.ServicesPage })));
 
-const APP_VERSION = '2026-05-10-02';
-
-const AppVersionCheck: React.FC<{children: React.ReactNode}> = ({ children }) => {
-  const [needsUpdate, setNeedsUpdate] = React.useState(false);
-  
-  React.useEffect(() => {
-    try {
-      const currentVersion = localStorage.getItem('APP_VERSION');
-      if (currentVersion !== APP_VERSION) {
-        setNeedsUpdate(true);
-      }
-    } catch (e) {
-      console.warn("Could not check/update APP_VERSION", e);
-    }
-  }, []);
-
-  if (needsUpdate) {
-    return (
-      <div className="min-h-screen bg-[#050A18] flex flex-col items-center justify-center p-4">
-        <div className="bg-[#121E3D] border border-red-500/30 p-12 rounded-[2rem] max-w-lg w-full text-center shadow-xl relative overflow-hidden">
-          <h2 className="text-2xl font-black text-white mb-4 uppercase tracking-tighter" dir="rtl">تم رصد نسخة جديدة من التطبيق</h2>
-          <p className="text-gray-400 text-sm mb-8 whitespace-pre-wrap" dir="rtl">
-            يرجى تحديث التطبيق للحصول على أحدث الميزات والإصلاحات ولضمان استقرار الأداء.
-          </p>
-          <button 
-             onClick={() => { 
-               if (typeof (window as any).resetAppStorage === 'function') {
-                (window as any).resetAppStorage();
-              }
-              localStorage.setItem('APP_VERSION', APP_VERSION);
-              window.location.href = window.location.pathname + '#/'; 
-             }} 
-             className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-xl font-bold uppercase text-sm transition-all shadow-lg"
-          >
-            تحديث التطبيق
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  return <>{children}</>;
-};
-
 class AppErrorBoundary extends React.Component<{children: React.ReactNode}, {hasError: boolean, error: Error | null}> {
   constructor(props: any) {
     super(props);
@@ -203,19 +159,17 @@ function AppContent() {
 function App() {
   return (
     <AppErrorBoundary>
-      <AppVersionCheck>
-        <SettingsProvider>
-          <LanguageProvider>
-            <AuthProvider>
-              <MarketProvider>
-                <VisitorTracker />
-                <ScrollToTop />
-                <AppContent />
-              </MarketProvider>
-            </AuthProvider>
-          </LanguageProvider>
-        </SettingsProvider>
-      </AppVersionCheck>
+      <SettingsProvider>
+        <LanguageProvider>
+          <AuthProvider>
+            <MarketProvider>
+              <VisitorTracker />
+              <ScrollToTop />
+              <AppContent />
+            </MarketProvider>
+          </AuthProvider>
+        </LanguageProvider>
+      </SettingsProvider>
     </AppErrorBoundary>
   );
 }
