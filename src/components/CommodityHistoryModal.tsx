@@ -8,6 +8,7 @@ import { useChartContainer } from '../hooks/useChartContainer';
 import { PriceDisplay } from './PriceDisplay';
 import { exportChartToPNG } from '../utils/exportChart';
 import { formatDisplayDate } from '../utils/formatDate';
+import { aggregateDailyLastPrices } from '../utils/dailyPriceAggregator';
 
 interface CommodityHistoryModalProps {
   commodity: any;
@@ -52,33 +53,27 @@ export const CommodityHistoryModal: React.FC<CommodityHistoryModalProps> = ({ co
         const { data, error } = await query;
 
         if (error) throw error;
-        
-        console.log('History rows:', data);
 
         if (data && data.length > 0) {
-          const formattedData = data.map(item => ({
+          // Aggregate to exactly 1 point per day with the chronologically last price
+          const dailyPoints = aggregateDailyLastPrices(data, language as 'ar' | 'en');
+          const formattedData = dailyPoints.map(item => ({
             ...item,
-            price: Number(item.price),
-            time: formatDisplayDate(item.recorded_at)
+            time: item.dateLabel,
+            price: item.price
           }));
-          const isMobile = window.innerWidth < 768;
-          const maxPoints = isMobile ? 8 : 12;
-          let displayData = formattedData;
-          if (formattedData.length > maxPoints) {
-            const step = Math.ceil(formattedData.length / maxPoints);
-            displayData = formattedData.filter((_, index) => index % step === 0 || index === formattedData.length - 1);
-          }
-          setHistoryData(displayData);
 
-          // Calculate stats
-          const prices = data.map(d => Number(d.price));
+          setHistoryData(formattedData);
+
+          // Calculate stats based on daily aggregated records
+          const prices = dailyPoints.map(d => d.price);
           setStats({
             firstPrice: prices[0],
             lastPrice: prices[prices.length - 1],
             highPrice: Math.max(...prices),
             lowPrice: Math.min(...prices),
-            firstDate: data[0].recorded_at,
-            lastDate: data[data.length - 1].recorded_at
+            firstDate: dailyPoints[0].date,
+            lastDate: dailyPoints[dailyPoints.length - 1].date
           });
         } else {
           setHistoryData([]);
@@ -119,12 +114,14 @@ export const CommodityHistoryModal: React.FC<CommodityHistoryModalProps> = ({ co
         `${formatDisplayDate(stats.firstDate)} - ${formatDisplayDate(stats.lastDate)}` : '';
       
       await exportChartToPNG({
+        data: historyData,
         element: chartRef.current,
         filename: commodityName || commodity.symbol,
         title: chartTitle,
         subtitle: commodityName,
         dateRange: dateRangeStr,
-        theme: 'dark'
+        theme: 'dark',
+        language: language as 'ar' | 'en'
       });
     } catch (err) {
       console.error('Error exporting chart to PNG:', err);

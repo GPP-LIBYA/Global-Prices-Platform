@@ -8,6 +8,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { PriceDisplay } from '../components/PriceDisplay';
 import { exportChartToPNG } from '../utils/exportChart';
 import { formatDisplayDate } from '../utils/formatDate';
+import { aggregateDailyLastPrices } from '../utils/dailyPriceAggregator';
 import { useChartContainer } from '../hooks/useChartContainer';
 
 export const HistoricalArchive = () => {
@@ -63,27 +64,23 @@ export const HistoricalArchive = () => {
       }
 
       if (filtered.length > 0) {
-        const formatted = filtered.map(item => ({
+        const dailyPoints = aggregateDailyLastPrices(filtered, language as 'ar' | 'en');
+        const formatted = dailyPoints.map(item => ({
           ...item,
-          time: formatDisplayDate(item.recorded_at)
+          time: item.dateLabel,
+          price: item.price
         }));
-        const isMobile = window.innerWidth < 768;
-        const maxPoints = isMobile ? 8 : 12;
-        let displayData = formatted;
-        if (formatted.length > maxPoints) {
-          const step = Math.ceil(formatted.length / maxPoints);
-          displayData = formatted.filter((_, index) => index % step === 0 || index === formatted.length - 1);
-        }
-        setFormattedHistory(displayData);
+        
+        setFormattedHistory(formatted);
 
-        const prices = filtered.map(d => d.price);
+        const prices = dailyPoints.map(d => d.price);
         setStats({
-          firstPrice: filtered[0].price,
-          lastPrice: filtered[filtered.length - 1].price,
+          firstPrice: prices[0],
+          lastPrice: prices[prices.length - 1],
           highPrice: Math.max(...prices),
           lowPrice: Math.min(...prices),
-          firstDate: filtered[0].recorded_at,
-          lastDate: filtered[filtered.length - 1].recorded_at
+          firstDate: dailyPoints[0].date,
+          lastDate: dailyPoints[dailyPoints.length - 1].date
         });
       } else {
         setFormattedHistory([]);
@@ -117,12 +114,14 @@ export const HistoricalArchive = () => {
       const dateRangeStr = `${formatDisplayDate(stats.firstDate)} - ${formatDisplayDate(stats.lastDate)}`;
       
       await exportChartToPNG({
+        data: formattedHistory,
         element: chartRef.current,
         filename: commodityName,
         title: chartTitle,
         subtitle: commodityName,
         dateRange: dateRangeStr,
-        theme: 'dark'
+        theme: 'dark',
+        language: language as 'ar' | 'en'
       });
     } catch (err) {
       console.error('Error exporting chart to PNG:', err);

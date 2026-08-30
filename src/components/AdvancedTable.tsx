@@ -199,22 +199,27 @@ export const AdvancedTable = ({ limit }: { limit?: number }) => {
 
   const exportToPDF = async () => {
     const doc = new jsPDF({ orientation: 'landscape' });
-    
+    let fontLoaded = false;
+
     try {
-      // Try fetching a font that supports Arabic
-      const url = "https://fonts.gstatic.com/s/cairo/v28/SLXWc1nY6Hkvalv_T3t2w82f.ttf"; // Cairo Regular
+      // Fetch high quality Arabic Unicode TTF font from reliable CDN
+      const url = "https://cdn.jsdelivr.net/gh/google/fonts@main/ofl/amiri/Amiri-Regular.ttf";
       const response = await fetch(url);
-      const buffer = await response.arrayBuffer();
-      const bytes = new Uint8Array(buffer);
-      let binary = '';
-      for (let i = 0; i < bytes.byteLength; i++) {
-        binary += String.fromCharCode(bytes[i]);
+      if (response.ok) {
+        const buffer = await response.arrayBuffer();
+        const bytes = new Uint8Array(buffer);
+        let binary = '';
+        for (let i = 0; i < bytes.byteLength; i++) {
+          binary += String.fromCharCode(bytes[i]);
+        }
+        const base64Font = window.btoa(binary);
+        
+        doc.addFileToVFS('Amiri.ttf', base64Font);
+        doc.addFont('Amiri.ttf', 'Amiri', 'normal');
+        doc.addFont('Amiri.ttf', 'Amiri', 'bold');
+        doc.setFont('Amiri');
+        fontLoaded = true;
       }
-      const base64Font = window.btoa(binary);
-      
-      doc.addFileToVFS('Cairo.ttf', base64Font);
-      doc.addFont('Cairo.ttf', 'Cairo', 'normal');
-      doc.setFont('Cairo');
     } catch (e) {
       console.warn("Failed to load PDF font", e);
     }
@@ -307,7 +312,7 @@ export const AdvancedTable = ({ limit }: { limit?: number }) => {
       body: tableRows,
       theme: 'grid',
       styles: {
-        font: 'Cairo', // Use the custom font
+        ...(fontLoaded ? { font: 'Amiri' } : {}),
         fontStyle: 'normal',
         halign: 'center', // Center nicely under headers
         valign: 'middle',
@@ -319,7 +324,7 @@ export const AdvancedTable = ({ limit }: { limit?: number }) => {
       headStyles: {
         halign: 'center',
         valign: 'middle',
-        font: 'Cairo',
+        ...(fontLoaded ? { font: 'Amiri' } : {}),
         fillColor: [28, 46, 90], // Match #1C2E5A
         textColor: 255,
         fontSize: 10,
@@ -335,13 +340,13 @@ export const AdvancedTable = ({ limit }: { limit?: number }) => {
       didDrawPage: function (data) {
         // Header title
         doc.setFontSize(16);
-        doc.setFont('Cairo', 'bold');
+        if (fontLoaded) doc.setFont('Amiri', 'bold');
         doc.setTextColor(28, 46, 90);
         doc.text(language === 'ar' ? 'تقرير أسعار السلع المباشر' : 'Live Commodity Prices Report', data.settings.margin.left, 15);
         
         // Date stamp
         doc.setFontSize(9);
-        doc.setFont('Cairo', 'normal');
+        if (fontLoaded) doc.setFont('Amiri', 'normal');
         doc.setTextColor(100, 100, 100);
         const dateStr = formatDisplayDateTime(new Date());
         // If it's AR, draw it on the right side
