@@ -11,6 +11,7 @@ import autoTable from 'jspdf-autotable';
 import { supabase } from '../lib/supabase';
 import { exportChartToPNG, renderChartCanvas } from '../utils/exportChart';
 import { formatDisplayDate, formatDisplayDateTime } from '../utils/formatDate';
+import { loadArabicPdfFont } from '../utils/pdfFonts';
 import { aggregateDailyLastPrices, getSectorLabel, DailyAggregatedPoint } from '../utils/dailyPriceAggregator';
 
 type SectorTab = 'energy' | 'metals' | 'commodities' | 'forex' | 'indices' | 'shipping';
@@ -327,6 +328,7 @@ export const AnalyticsCharts = () => {
   const exportToPDF = async () => {
     try {
       const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+      const { fontName } = await loadArabicPdfFont(doc);
       const pageWidth = doc.internal.pageSize.getWidth();
       const isRtl = language === 'ar';
       
@@ -362,7 +364,8 @@ export const AnalyticsCharts = () => {
 
       // 2. Add Second Page with Official Data Tables
       doc.addPage();
-      doc.setFontSize(16);
+      doc.setFont(fontName, 'bold');
+      doc.setFontSize(14);
       doc.setTextColor(18, 30, 61);
       doc.text(
         `${language === 'ar' ? 'جدول السجلات اليومية المجمعة' : 'Daily Aggregated Price History'} - ${commName} (${selectedSymbol})`,
@@ -381,8 +384,8 @@ export const AnalyticsCharts = () => {
           body: tableRows,
           startY: 25,
           theme: 'striped',
-          headStyles: { fillColor: [18, 30, 61], textColor: [212, 175, 55], fontStyle: 'bold' },
-          styles: { fontSize: 10, cellPadding: 3, halign: isRtl ? 'right' : 'left' }
+          headStyles: { font: fontName, fillColor: [18, 30, 61], textColor: [212, 175, 55], fontStyle: 'bold' },
+          styles: { font: fontName, fontSize: 10, cellPadding: 3, halign: isRtl ? 'right' : 'left' }
         });
       }
 
@@ -390,10 +393,11 @@ export const AnalyticsCharts = () => {
       const pageCount = (doc as any).internal.getNumberOfPages();
       for (let i = 1; i <= pageCount; i++) {
         doc.setPage(i);
+        doc.setFont(fontName, 'normal');
         doc.setFontSize(9);
         doc.setTextColor(120, 120, 120);
         doc.text(
-          `Global Pricing Platform (GCP) • © Libya Trade Network • Generated: ${formatDisplayDateTime(new Date())} • Page ${i} of ${pageCount}`,
+          `Global Pricing Platform (GPP) - Libya Trade Network - Generated: ${formatDisplayDateTime(new Date())} - Page ${i} of ${pageCount}`,
           pageWidth / 2,
           doc.internal.pageSize.getHeight() - 6,
           { align: 'center' }

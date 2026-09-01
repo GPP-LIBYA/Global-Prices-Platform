@@ -17,6 +17,7 @@ import { useChartContainer } from '../hooks/useChartContainer';
 import { useLocation } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { formatDisplayDateTime } from '../utils/formatDate';
+import { loadArabicPdfFont } from '../utils/pdfFonts';
 
 const logUserActivity = async (action: string, details: string) => {
   try {
@@ -199,25 +200,7 @@ export const AdvancedTable = ({ limit }: { limit?: number }) => {
 
   const exportToPDF = async () => {
     const doc = new jsPDF({ orientation: 'landscape' });
-    
-    try {
-      // Try fetching a font that supports Arabic
-      const url = "https://fonts.gstatic.com/s/cairo/v28/SLXWc1nY6Hkvalv_T3t2w82f.ttf"; // Cairo Regular
-      const response = await fetch(url);
-      const buffer = await response.arrayBuffer();
-      const bytes = new Uint8Array(buffer);
-      let binary = '';
-      for (let i = 0; i < bytes.byteLength; i++) {
-        binary += String.fromCharCode(bytes[i]);
-      }
-      const base64Font = window.btoa(binary);
-      
-      doc.addFileToVFS('Cairo.ttf', base64Font);
-      doc.addFont('Cairo.ttf', 'Cairo', 'normal');
-      doc.setFont('Cairo');
-    } catch (e) {
-      console.warn("Failed to load PDF font", e);
-    }
+    const { fontName } = await loadArabicPdfFont(doc);
     
     // Dynamically generate columns based on visibleColumns state
     const tableColumn = [];
@@ -307,7 +290,7 @@ export const AdvancedTable = ({ limit }: { limit?: number }) => {
       body: tableRows,
       theme: 'grid',
       styles: {
-        font: 'Cairo', // Use the custom font
+        font: fontName,
         fontStyle: 'normal',
         halign: 'center', // Center nicely under headers
         valign: 'middle',
@@ -319,7 +302,7 @@ export const AdvancedTable = ({ limit }: { limit?: number }) => {
       headStyles: {
         halign: 'center',
         valign: 'middle',
-        font: 'Cairo',
+        font: fontName,
         fillColor: [28, 46, 90], // Match #1C2E5A
         textColor: 255,
         fontSize: 10,
@@ -335,13 +318,13 @@ export const AdvancedTable = ({ limit }: { limit?: number }) => {
       didDrawPage: function (data) {
         // Header title
         doc.setFontSize(16);
-        doc.setFont('Cairo', 'bold');
+        doc.setFont(fontName, 'bold');
         doc.setTextColor(28, 46, 90);
         doc.text(language === 'ar' ? 'تقرير أسعار السلع المباشر' : 'Live Commodity Prices Report', data.settings.margin.left, 15);
         
         // Date stamp
         doc.setFontSize(9);
-        doc.setFont('Cairo', 'normal');
+        doc.setFont(fontName, 'normal');
         doc.setTextColor(100, 100, 100);
         const dateStr = formatDisplayDateTime(new Date());
         // If it's AR, draw it on the right side
