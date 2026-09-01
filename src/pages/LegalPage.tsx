@@ -22,62 +22,63 @@ export const LegalPage = () => {
   const content = {
     privacy: {
       title: language === 'ar' ? 'سياسة الخصوصية' : 'Privacy Policy',
-      icon: <Shield size={40} />,
+      icon: Shield,
       text: settings.privacyPolicyAr || (language === 'ar' ? 'نحن نلتزم بحماية خصوصية بياناتك ومعلوماتك الشخصية.' : 'We are committed to protecting the privacy of your data and personal information.')
     },
     terms: {
       title: language === 'ar' ? 'شروط الاستخدام' : 'Terms of Use',
-      icon: <FileText size={40} />,
+      icon: FileText,
       text: settings.termsAr || (language === 'ar' ? 'باستخدامك لهذه المنصة، فإنك توافق على الالتزام بشروط الاستخدام المعمول بها.' : 'By using this platform, you agree to abide by the applicable terms of use.')
     },
     disclaimer: {
       title: language === 'ar' ? 'إخلاء المسؤولية' : 'Disclaimer',
-      icon: <AlertCircle size={40} />,
+      icon: AlertCircle,
       text: settings.disclaimerAr || (language === 'ar' ? 'جميع البيانات والتحاليل المقدمة في هذه المنصة هي لأغراض إعلامية فقط ولا تعتبر نصيحة استثمارية.' : 'All data and analysis provided on this platform are for informational purposes only and are not considered investment advice.')
     }
   };
 
   const page = content[type];
+  const IconComponent = page.icon;
 
   return (
-    <div className="pt-24 pb-20 min-h-screen bg-[#050A18]">
+    <div className="pt-16 sm:pt-24 pb-12 sm:pb-20 min-h-screen bg-[#050A18]">
       <div className="container mx-auto px-4 max-w-4xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-[#121E3D] border border-[#1C2E5A] rounded-[3rem] p-8 md:p-16 shadow-2xl relative overflow-hidden"
+          className="bg-[#121E3D] border border-[#1C2E5A] rounded-2xl sm:rounded-[3rem] p-5 sm:p-10 md:p-16 shadow-2xl relative overflow-hidden"
         >
-          <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent opacity-50"></div>
+          <div className="absolute top-0 left-0 w-full h-1.5 sm:h-2 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent opacity-50"></div>
           
           <button 
             onClick={() => navigate(-1)}
-            className="flex items-center gap-2 text-gray-400 hover:text-[#D4AF37] mb-12 transition-colors font-bold uppercase tracking-widest text-xs"
+            className="flex items-center gap-1.5 sm:gap-2 text-gray-400 hover:text-[#D4AF37] mb-6 sm:mb-12 transition-colors font-bold uppercase tracking-widest text-xs"
           >
-            {language === 'ar' ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
-            {language === 'ar' ? 'العودة' : 'Back'}
+            {language === 'ar' ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+            <span>{language === 'ar' ? 'العودة' : 'Back'}</span>
           </button>
 
-          <div className="flex items-center gap-6 mb-12">
-            <div className="w-20 h-20 bg-[#0A1128] rounded-[2rem] border border-[#1C2E5A] flex items-center justify-center text-[#D4AF37] shadow-xl">
-              {page.icon}
+          <div className="flex items-center gap-4 sm:gap-6 mb-8 sm:mb-12">
+            <div className="w-14 h-14 sm:w-20 sm:h-20 bg-[#0A1128] rounded-2xl sm:rounded-[2rem] border border-[#1C2E5A] flex items-center justify-center text-[#D4AF37] shadow-xl shrink-0">
+              <IconComponent size={28} />
             </div>
             <div>
-              <h1 className="text-3xl md:text-4xl font-black text-white uppercase tracking-tight">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-white uppercase tracking-tight">
                 {page.title}
               </h1>
-              <div className="h-1 w-20 bg-[#D4AF37] mt-4 rounded-full"></div>
+              <div className="h-1 w-16 sm:w-20 bg-[#D4AF37] mt-2 sm:mt-4 rounded-full"></div>
             </div>
           </div>
 
           <div className="prose prose-invert max-w-none">
-            <p className="text-gray-300 text-lg leading-relaxed font-medium whitespace-pre-wrap">
+            <p className="text-gray-300 text-sm sm:text-base md:text-lg leading-relaxed font-medium whitespace-pre-wrap">
               {page.text}
             </p>
           </div>
 
-          <div className="mt-20 pt-12 border-t border-[#1C2E5A]">
-            <p className="text-[10px] text-gray-600 font-black uppercase tracking-[0.4em] text-center">
-              {language === 'ar' ? 'منصة الأسعار العالمية GCP - المكتب القانوني' : 'Global Pricing Platform - Legal Division'}
+          <div className="mt-10 sm:mt-20 pt-6 sm:pt-12 border-t border-[#1C2E5A]">
+            <p className="text-[10px] text-gray-600 font-black uppercase tracking-[0.2em] sm:tracking-[0.4em] text-center">
+              {language === 'ar' ? 'منصة الأسعار العالمية GPP - المكتب القانوني' : 'Global Pricing Platform - Legal Division'}
             </p>
           </div>
         </motion.div>

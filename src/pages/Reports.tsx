@@ -103,17 +103,17 @@ export const Reports = () => {
   }
 
   return (
-    <div className="py-12 container mx-auto px-4 min-h-[60vh]">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
+    <div className="py-8 sm:py-12 container mx-auto px-4 min-h-[60vh]">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 sm:mb-12">
         <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-2xl bg-[#D4AF37]/10 flex items-center justify-center border border-[#D4AF37]/20">
-            <BookOpen className="text-[#D4AF37]" size={36} />
+          <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-[#D4AF37]/10 flex items-center justify-center border border-[#D4AF37]/20 shrink-0">
+            <BookOpen className="text-[#D4AF37]" size={28} />
           </div>
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-1">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-1">
               {language === 'ar' ? 'مركز التقارير والتحليلات' : 'Reports & Analytics Center'}
             </h2>
-            <p className="text-gray-400">
+            <p className="text-sm sm:text-base text-gray-400">
               {language === 'ar' ? 'تقارير حصرية ومعتمدة حول حركة الأسواق العالمية' : 'Exclusive and certified reports on global market movements'}
             </p>
           </div>
@@ -121,35 +121,35 @@ export const Reports = () => {
       </div>
       
       {reports.length === 0 ? (
-        <div className="bg-[#121E3D] border border-[#1C2E5A] rounded-3xl p-16 text-center shadow-2xl">
-          <AlertCircle size={64} className="text-gray-600 mx-auto mb-6" />
-          <h3 className="text-2xl font-bold text-white mb-2">
+        <div className="bg-[#121E3D] border border-[#1C2E5A] rounded-2xl sm:rounded-3xl p-8 sm:p-16 text-center shadow-2xl">
+          <AlertCircle size={48} className="text-gray-600 mx-auto mb-4 sm:mb-6" />
+          <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">
             {language === 'ar' ? 'لا توجد تقارير منشورة حالياً' : 'No Published Reports Yet'}
           </h3>
-          <p className="text-gray-500">
+          <p className="text-sm sm:text-base text-gray-500">
             {language === 'ar' ? 'سيتم إضافة التقارير والتحليلات الجديدة هنا قريباً.' : 'New reports and analyses will be added here soon.'}
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 sm:gap-8">
           {/* Sidebar - Report List */}
-          <div className="lg:col-span-1 space-y-4">
-            <h4 className="text-white font-bold px-2 flex items-center gap-2">
+          <div className="lg:col-span-1 space-y-3 sm:space-y-4">
+            <h4 className="text-white font-bold px-2 flex items-center gap-2 text-sm sm:text-base">
               <FileText size={18} className="text-[#D4AF37]" />
               {language === 'ar' ? 'قائمة التقارير' : 'Report List'}
             </h4>
-            <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+            <div className="space-y-2.5 sm:space-y-3 max-h-[350px] lg:max-h-[600px] overflow-y-auto pr-1 sm:pr-2 custom-scrollbar">
               {reports.map((report) => (
                 <button
                   key={report.id}
                   onClick={() => setSelectedReport(report)}
-                  className={`w-full text-right p-4 rounded-2xl border transition-all flex flex-col gap-2 group ${
+                  className={`w-full ${language === 'ar' ? 'text-right' : 'text-left'} p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border transition-all flex flex-col gap-2 group ${
                     selectedReport?.id === report.id
                       ? 'bg-[#1C2E5A] border-[#D4AF37] shadow-lg shadow-[#D4AF37]/5'
                       : 'bg-[#121E3D] border-[#1C2E5A] hover:border-[#1C2E5A]/80'
                   }`}
                 >
-                  <div className={`font-bold transition-colors ${selectedReport?.id === report.id ? 'text-[#D4AF37]' : 'text-white group-hover:text-[#D4AF37]'}`}>
+                  <div className={`font-bold text-sm sm:text-base transition-colors line-clamp-2 ${selectedReport?.id === report.id ? 'text-[#D4AF37]' : 'text-white group-hover:text-[#D4AF37]'}`}>
                     {language === 'ar' ? report.titleAr : report.titleEn}
                   </div>
                   <div className="flex items-center justify-between text-[10px] text-gray-500">
@@ -174,42 +174,42 @@ export const Reports = () => {
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
-                  className="bg-[#121E3D] border border-[#1C2E5A] rounded-3xl overflow-hidden shadow-2xl flex flex-col"
+                  className="bg-[#121E3D] border border-[#1C2E5A] rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl flex flex-col"
                 >
                   {/* Header */}
-                  <div className="p-8 border-b border-[#1C2E5A] bg-[#121E3D] flex flex-col md:flex-row md:items-center justify-between gap-6">
-                    <div>
-                      <div className="flex items-center gap-3 mb-3">
-                        <span className="bg-[#D4AF37]/10 text-[#D4AF37] text-[10px] font-black px-3 py-1 rounded-full border border-[#D4AF37]/20 uppercase tracking-widest">
+                  <div className="p-5 sm:p-8 border-b border-[#1C2E5A] bg-[#121E3D] flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3 flex-wrap">
+                        <span className="bg-[#D4AF37]/10 text-[#D4AF37] text-[9px] sm:text-[10px] font-black px-2.5 sm:px-3 py-1 rounded-full border border-[#D4AF37]/20 uppercase tracking-widest">
                           {selectedReport.topic}
                         </span>
                         <span className="text-gray-500 text-xs flex items-center gap-1 font-mono">
-                          <Clock size={14} /> {formatDate(selectedReport.publishedAt)}
+                          <Clock size={13} /> {formatDate(selectedReport.publishedAt)}
                         </span>
                       </div>
-                      <h1 className="text-2xl md:text-3xl font-black text-white leading-tight">
+                      <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-white leading-tight">
                         {language === 'ar' ? selectedReport.titleAr : selectedReport.titleEn}
                       </h1>
                     </div>
                     <button
                       onClick={handleDownload}
-                      className="px-6 py-3 bg-[#0A1128] text-white rounded-xl border border-[#1C2E5A] hover:border-[#D4AF37] transition-all flex items-center justify-center gap-2 font-bold whitespace-nowrap active:scale-95"
+                      className="w-full sm:w-auto px-5 sm:px-6 py-3 bg-[#0A1128] text-white rounded-xl border border-[#1C2E5A] hover:border-[#D4AF37] transition-all flex items-center justify-center gap-2 font-bold whitespace-nowrap active:scale-95 text-sm sm:text-base shrink-0"
                     >
-                      <Download size={20} className="text-[#D4AF37]" />
-                      {language === 'ar' ? 'تنزيل التقرير' : 'Download Report'}
+                      <Download size={18} className="text-[#D4AF37]" />
+                      <span>{language === 'ar' ? 'تنزيل التقرير' : 'Download Report'}</span>
                     </button>
                   </div>
 
                   {/* Body */}
-                  <div className="p-8 md:p-12 prose prose-invert max-w-none">
-                    <div className="markdown-body text-gray-300 leading-relaxed text-lg">
+                  <div className="p-5 sm:p-8 md:p-12 prose prose-invert max-w-none">
+                    <div className="markdown-body text-gray-300 leading-relaxed text-base sm:text-lg">
                       <Markdown>{language === 'ar' ? selectedReport.contentAr : selectedReport.contentEn}</Markdown>
                     </div>
                   </div>
 
                   {/* Footer */}
-                  <div className="p-6 border-t border-[#1C2E5A] bg-[#0A1128]/50 text-center">
-                    <p className="text-[10px] text-gray-500 font-mono italic">
+                  <div className="p-4 sm:p-6 border-t border-[#1C2E5A] bg-[#0A1128]/50 text-center">
+                    <p className="text-[9px] sm:text-[10px] text-gray-500 font-mono italic">
                       {language === 'ar' 
                         ? `هذا التقرير تم إنشاؤه بواسطة خوارزميات الذكاء الاصطناعي ومعتمد من قبل إدارة المنصة. - ${selectedReport.author}` 
                         : `This report was generated by AI algorithms and certified by the platform administration. - ${selectedReport.author}`}

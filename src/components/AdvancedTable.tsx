@@ -199,27 +199,22 @@ export const AdvancedTable = ({ limit }: { limit?: number }) => {
 
   const exportToPDF = async () => {
     const doc = new jsPDF({ orientation: 'landscape' });
-    let fontLoaded = false;
-
+    
     try {
-      // Fetch high quality Arabic Unicode TTF font from reliable CDN
-      const url = "https://cdn.jsdelivr.net/gh/google/fonts@main/ofl/amiri/Amiri-Regular.ttf";
+      // Try fetching a font that supports Arabic
+      const url = "https://fonts.gstatic.com/s/cairo/v28/SLXWc1nY6Hkvalv_T3t2w82f.ttf"; // Cairo Regular
       const response = await fetch(url);
-      if (response.ok) {
-        const buffer = await response.arrayBuffer();
-        const bytes = new Uint8Array(buffer);
-        let binary = '';
-        for (let i = 0; i < bytes.byteLength; i++) {
-          binary += String.fromCharCode(bytes[i]);
-        }
-        const base64Font = window.btoa(binary);
-        
-        doc.addFileToVFS('Amiri.ttf', base64Font);
-        doc.addFont('Amiri.ttf', 'Amiri', 'normal');
-        doc.addFont('Amiri.ttf', 'Amiri', 'bold');
-        doc.setFont('Amiri');
-        fontLoaded = true;
+      const buffer = await response.arrayBuffer();
+      const bytes = new Uint8Array(buffer);
+      let binary = '';
+      for (let i = 0; i < bytes.byteLength; i++) {
+        binary += String.fromCharCode(bytes[i]);
       }
+      const base64Font = window.btoa(binary);
+      
+      doc.addFileToVFS('Cairo.ttf', base64Font);
+      doc.addFont('Cairo.ttf', 'Cairo', 'normal');
+      doc.setFont('Cairo');
     } catch (e) {
       console.warn("Failed to load PDF font", e);
     }
@@ -312,7 +307,7 @@ export const AdvancedTable = ({ limit }: { limit?: number }) => {
       body: tableRows,
       theme: 'grid',
       styles: {
-        ...(fontLoaded ? { font: 'Amiri' } : {}),
+        font: 'Cairo', // Use the custom font
         fontStyle: 'normal',
         halign: 'center', // Center nicely under headers
         valign: 'middle',
@@ -324,7 +319,7 @@ export const AdvancedTable = ({ limit }: { limit?: number }) => {
       headStyles: {
         halign: 'center',
         valign: 'middle',
-        ...(fontLoaded ? { font: 'Amiri' } : {}),
+        font: 'Cairo',
         fillColor: [28, 46, 90], // Match #1C2E5A
         textColor: 255,
         fontSize: 10,
@@ -340,13 +335,13 @@ export const AdvancedTable = ({ limit }: { limit?: number }) => {
       didDrawPage: function (data) {
         // Header title
         doc.setFontSize(16);
-        if (fontLoaded) doc.setFont('Amiri', 'bold');
+        doc.setFont('Cairo', 'bold');
         doc.setTextColor(28, 46, 90);
         doc.text(language === 'ar' ? 'تقرير أسعار السلع المباشر' : 'Live Commodity Prices Report', data.settings.margin.left, 15);
         
         // Date stamp
         doc.setFontSize(9);
-        if (fontLoaded) doc.setFont('Amiri', 'normal');
+        doc.setFont('Cairo', 'normal');
         doc.setTextColor(100, 100, 100);
         const dateStr = formatDisplayDateTime(new Date());
         // If it's AR, draw it on the right side
@@ -470,24 +465,24 @@ export const AdvancedTable = ({ limit }: { limit?: number }) => {
               <p className="text-sm text-gray-400">{t('tableSub')}</p>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-center gap-4 w-full lg:w-auto">
+            <div className="flex flex-col sm:flex-row flex-wrap lg:flex-nowrap items-stretch sm:items-center gap-3 w-full lg:w-auto">
               {/* Search */}
-              <div className="relative w-full sm:w-auto flex-grow lg:flex-grow-0">
+              <div className="relative w-full sm:w-auto flex-grow lg:flex-grow-0 min-w-0">
                 <Search size={18} className={`absolute ${language === 'ar' ? 'right-3' : 'left-3'} top-1/2 -translate-y-1/2 text-gray-400`} />
                 <input 
                   type="text" 
                   placeholder={t('searchTable')} 
-                  className={`w-full lg:w-64 bg-[#0A1128] border border-[#1C2E5A] rounded-lg py-2 ${language === 'ar' ? 'pr-10 pl-4' : 'pl-10 pr-4'} text-white focus:outline-none focus:border-[#D4AF37] transition-colors`}
+                  className={`w-full lg:w-64 bg-[#0A1128] border border-[#1C2E5A] rounded-lg py-2.5 sm:py-2 ${language === 'ar' ? 'pr-10 pl-4' : 'pl-10 pr-4'} text-white focus:outline-none focus:border-[#D4AF37] transition-colors text-base sm:text-sm`}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
 
               {/* Sector Filter */}
-              <div className="relative w-full sm:w-auto">
+              <div className="relative w-full sm:w-auto min-w-[140px]">
                 <Filter size={18} className={`absolute ${language === 'ar' ? 'right-3' : 'left-3'} top-1/2 -translate-y-1/2 text-gray-400`} />
                 <select 
-                  className={`w-full appearance-none bg-[#0A1128] border border-[#1C2E5A] rounded-lg py-2 ${language === 'ar' ? 'pr-10 pl-8' : 'pl-10 pr-8'} text-white focus:outline-none focus:border-[#D4AF37] transition-colors cursor-pointer`}
+                  className={`w-full appearance-none bg-[#0A1128] border border-[#1C2E5A] rounded-lg py-2.5 sm:py-2 ${language === 'ar' ? 'pr-10 pl-8' : 'pl-10 pr-8'} text-white focus:outline-none focus:border-[#D4AF37] transition-colors cursor-pointer text-base sm:text-sm`}
                   value={selectedSector}
                   onChange={(e) => setSelectedSector(e.target.value as any)}
                 >
@@ -499,14 +494,14 @@ export const AdvancedTable = ({ limit }: { limit?: number }) => {
               </div>
 
               {/* Export Buttons */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap sm:flex-nowrap justify-start sm:justify-end">
                 <div className="relative" ref={dropdownRef}>
                   <button 
                     onClick={() => setShowColumnDropdown(!showColumnDropdown)}
-                    className="flex items-center gap-2 bg-[#1C2E5A] hover:bg-[#2A4075] text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors border border-[#2A4075]"
+                    className="flex items-center gap-1.5 bg-[#1C2E5A] hover:bg-[#2A4075] text-white px-2.5 sm:px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors border border-[#2A4075]"
                     title={t('columns') || 'Columns'}
                   >
-                    <Columns size={16} className="text-[#D4AF37]" />
+                    <Columns size={15} className="text-[#D4AF37]" />
                     <span className="hidden sm:inline">{t('columns') || 'Columns'}</span>
                   </button>
                   {showColumnDropdown && (
@@ -528,17 +523,17 @@ export const AdvancedTable = ({ limit }: { limit?: number }) => {
                     </div>
                   )}
                 </div>
-                <button onClick={exportToExcel} className="flex items-center gap-2 bg-[#1C2E5A] hover:bg-[#2A4075] text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors border border-[#2A4075]" title={t('downloadExcel')}>
-                  <FileSpreadsheet size={16} className="text-[#10B981]" />
-                  <span className="hidden sm:inline">Excel</span>
+                <button onClick={exportToExcel} className="flex items-center gap-1.5 bg-[#1C2E5A] hover:bg-[#2A4075] text-white px-2.5 sm:px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors border border-[#2A4075]" title={t('downloadExcel')}>
+                  <FileSpreadsheet size={15} className="text-[#10B981]" />
+                  <span className="inline text-xs sm:text-sm">Excel</span>
                 </button>
-                <button onClick={exportToCSV} className="flex items-center gap-2 bg-[#1C2E5A] hover:bg-[#2A4075] text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors border border-[#2A4075]" title={t('downloadCsv')}>
-                  <FileCode size={16} className="text-[#3B82F6]" />
-                  <span className="hidden sm:inline">CSV</span>
+                <button onClick={exportToCSV} className="flex items-center gap-1.5 bg-[#1C2E5A] hover:bg-[#2A4075] text-white px-2.5 sm:px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors border border-[#2A4075]" title={t('downloadCsv')}>
+                  <FileCode size={15} className="text-[#3B82F6]" />
+                  <span className="inline text-xs sm:text-sm">CSV</span>
                 </button>
-                <button onClick={exportToPDF} className="flex items-center gap-2 bg-[#1C2E5A] hover:bg-[#2A4075] text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors border border-[#2A4075]" title={t('downloadPdf')}>
-                  <FileText size={16} className="text-[#EF4444]" />
-                  <span className="hidden sm:inline">PDF</span>
+                <button onClick={exportToPDF} className="flex items-center gap-1.5 bg-[#1C2E5A] hover:bg-[#2A4075] text-white px-2.5 sm:px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors border border-[#2A4075]" title={t('downloadPdf')}>
+                  <FileText size={15} className="text-[#EF4444]" />
+                  <span className="inline text-xs sm:text-sm">PDF</span>
                 </button>
               </div>
             </div>
@@ -761,19 +756,19 @@ export const AdvancedTable = ({ limit }: { limit?: number }) => {
                   className="bg-[#0A1128] rounded-xl border border-[#1C2E5A] p-4 space-y-4 cursor-pointer hover:border-[#D4AF37]/50 transition-colors"
                   onClick={() => setSelectedCommodity(item)}
                 >
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <div className="font-bold text-white text-lg truncate max-w-[200px]">{name}</div>
-                      <div className="text-sm text-gray-500 font-mono">{item.symbol}</div>
+                  <div className="flex justify-between items-start gap-2">
+                    <div className="min-w-0 flex-1">
+                      <div className="font-bold text-white text-base sm:text-lg truncate max-w-[150px] xs:max-w-[200px] sm:max-w-xs">{name}</div>
+                      <div className="text-xs sm:text-sm text-gray-500 font-mono">{item.symbol}</div>
                     </div>
-                    <div className="text-right" dir="ltr">
+                    <div className="text-right shrink-0" dir="ltr">
                       <div className="flex items-center gap-1 justify-end">
                         <span className="text-xs text-gray-500">
                           {item.currency === 'LYD' ? 'د.ل' : item.currency === 'EUR' ? '€' : item.currency === 'USD' ? '$' : item.currency}
                         </span>
-                        <PriceDisplay price={item.price} className="text-xl font-bold text-white" />
+                        <PriceDisplay price={item.price} className="text-lg sm:text-xl font-bold text-white" />
                       </div>
-                      <div className={`text-sm font-bold flex items-center justify-end gap-1 ${colorClass}`}>
+                      <div className={`text-xs sm:text-sm font-bold flex items-center justify-end gap-1 ${colorClass}`}>
                         <TrendIcon size={14} strokeWidth={3} />
                         <span>{isUp ? '+' : ''}{changePct.toFixed(2)}%</span>
                       </div>

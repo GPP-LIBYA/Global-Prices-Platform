@@ -174,26 +174,26 @@ export const Auth = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#050A18] py-20 px-4 flex items-center justify-center">
+    <div className="min-h-screen bg-[#050A18] py-10 sm:py-20 px-3.5 sm:px-4 flex items-center justify-center">
       <div className="w-full max-w-md relative z-10">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-[#0A1128] border border-[#1C2E5A] rounded-[2rem] p-8 sm:p-10 shadow-2xl relative overflow-hidden"
+          className="bg-[#0A1128] border border-[#1C2E5A] rounded-2xl sm:rounded-[2rem] p-5 sm:p-8 md:p-10 shadow-2xl relative overflow-hidden"
         >
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent opacity-50"></div>
           
-          <div className="w-16 h-16 bg-[#121E3D] border border-[#1C2E5A] rounded-2xl flex items-center justify-center text-[#D4AF37] mx-auto mb-8 shadow-xl">
-            {authState === 'login' ? <ShieldCheck size={32} /> : <User size={32} />}
+          <div className="w-12 h-12 sm:w-16 sm:h-16 bg-[#121E3D] border border-[#1C2E5A] rounded-2xl flex items-center justify-center text-[#D4AF37] mx-auto mb-6 sm:mb-8 shadow-xl">
+            {authState === 'login' ? <ShieldCheck size={26} /> : <User size={26} />}
           </div>
 
-          <div className="text-center mb-10">
-            <h1 className="text-3xl md:text-4xl font-black text-white uppercase tracking-tight mb-2">
+          <div className="text-center mb-6 sm:mb-10">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-white uppercase tracking-tight mb-2">
               {authState === 'login' 
                 ? (language === 'ar' ? 'تسجيل الدخول' : 'Sign In')
                 : (language === 'ar' ? 'طلب حساب جديد' : 'Request New Account')}
             </h1>
-            <p className="text-base font-bold text-gray-400">
+            <p className="text-xs sm:text-base font-bold text-gray-400">
               {language === 'ar' ? 'الوصول إلى لوحة المعلومات' : 'Access the dashboard'}
             </p>
           </div>
@@ -204,10 +204,10 @@ export const Auth = () => {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                className="bg-red-500/10 border border-red-500/30 text-red-500 p-4 rounded-2xl mb-8 flex items-start gap-3 text-sm font-bold"
+                className="bg-red-500/10 border border-red-500/30 text-red-500 p-3 sm:p-4 rounded-xl sm:rounded-2xl mb-6 flex items-start gap-2.5 sm:gap-3 text-xs sm:text-sm font-bold"
                 dir={language === 'ar' ? 'rtl' : 'ltr'}
               >
-                <AlertCircle size={18} className="mt-0.5 shrink-0" />
+                <AlertCircle size={16} className="mt-0.5 shrink-0" />
                 <p>{error}</p>
               </motion.div>
             )}
@@ -216,29 +216,29 @@ export const Auth = () => {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                className="bg-green-500/10 border border-green-500/30 text-green-500 p-4 rounded-2xl mb-8 flex items-start gap-3 text-sm font-bold"
+                className="bg-green-500/10 border border-green-500/30 text-green-500 p-3 sm:p-4 rounded-xl sm:rounded-2xl mb-6 flex items-start gap-2.5 sm:gap-3 text-xs sm:text-sm font-bold"
                 dir={language === 'ar' ? 'rtl' : 'ltr'}
               >
-                <CheckCircle2 size={18} className="mt-0.5 shrink-0" />
+                <CheckCircle2 size={16} className="mt-0.5 shrink-0" />
                 <p>{success}</p>
               </motion.div>
             )}
           </AnimatePresence>
 
-          <form onSubmit={handleSubmit} className="space-y-6" dir={language === 'ar' ? 'rtl' : 'ltr'}>
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6" dir={language === 'ar' ? 'rtl' : 'ltr'}>
             
             {/* Name */}
-            <div className="space-y-2">
-              <label className="text-sm font-black text-gray-400 uppercase tracking-widest mr-4">
+            <div className="space-y-1.5 sm:space-y-2">
+              <label className="text-xs sm:text-sm font-black text-gray-400 uppercase tracking-widest px-1">
                 {language === 'ar' ? 'الاسم' : 'Name'}
               </label>
               <div className="relative">
-                <User className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500" size={20} />
+                <User className={`absolute ${language === 'ar' ? 'right-3.5 sm:right-4' : 'left-3.5 sm:left-4'} top-1/2 -translate-y-1/2 text-gray-500`} size={18} />
                 <input
                   type="text"
                   required
                   placeholder={language === 'ar' ? 'أدخل الاسم' : 'Enter name'}
-                  className="w-full bg-[#121E3D] border border-[#1C2E5A] rounded-2xl py-4 pr-12 pl-4 text-white focus:border-[#D4AF37] outline-none transition-all font-bold text-base md:text-lg placeholder:text-gray-600 placeholder:font-normal"
+                  className={`w-full bg-[#121E3D] border border-[#1C2E5A] rounded-xl sm:rounded-2xl py-3.5 sm:py-4 ${language === 'ar' ? 'pr-11 sm:pr-12 pl-4' : 'pl-11 sm:pl-12 pr-4'} text-white focus:border-[#D4AF37] outline-none transition-all font-bold text-base placeholder:text-gray-600 placeholder:font-normal`}
                   value={formData.fullName}
                   onChange={e => setFormData({...formData, fullName: e.target.value})}
                 />
@@ -246,12 +246,12 @@ export const Auth = () => {
             </div>
 
             {/* Phone Number */}
-            <div className="space-y-2">
-              <label className="text-sm font-black text-gray-400 uppercase tracking-widest mr-4">
+            <div className="space-y-1.5 sm:space-y-2">
+              <label className="text-xs sm:text-sm font-black text-gray-400 uppercase tracking-widest px-1">
                 {language === 'ar' ? 'رقم الهاتف' : 'Phone Number'}
               </label>
               <div className="relative">
-                <Phone className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500" size={20} />
+                <Phone className={`absolute ${language === 'ar' ? 'right-3.5 sm:right-4' : 'left-3.5 sm:left-4'} top-1/2 -translate-y-1/2 text-gray-500`} size={18} />
                 <input
                   type="tel"
                   inputMode="numeric"
@@ -261,12 +261,12 @@ export const Auth = () => {
                   title={language === 'ar' 
                     ? 'يرجى إدخال رقم الهاتف بالصيغة الدولية التي تبدأ بـ 00، مثال: 00218912345678'
                     : 'Please enter the phone number in international format starting with 00, e.g. 00218912345678.'}
-                  className="w-full bg-[#121E3D] border border-[#1C2E5A] rounded-2xl py-4 pr-12 pl-4 text-white focus:border-[#D4AF37] outline-none transition-all font-bold text-base md:text-lg placeholder:text-gray-600 placeholder:font-normal"
+                  className={`w-full bg-[#121E3D] border border-[#1C2E5A] rounded-xl sm:rounded-2xl py-3.5 sm:py-4 ${language === 'ar' ? 'pr-11 sm:pr-12 pl-4' : 'pl-11 sm:pl-12 pr-4'} text-white focus:border-[#D4AF37] outline-none transition-all font-bold text-base placeholder:text-gray-600 placeholder:font-normal`}
                   value={formData.phone}
                   onChange={e => setFormData({...formData, phone: e.target.value})}
                 />
               </div>
-              <p className="text-[11px] text-gray-500 font-bold px-2">
+              <p className="text-[10px] sm:text-[11px] text-gray-500 font-bold px-1">
                 {language === 'ar' 
                   ? 'مثال: 00218912345678 (يبدأ بـ 00 بدون علامة + وبدون مسافات)' 
                   : 'Example: 00218912345678 (starts with 00 without + or spaces)'}
@@ -274,52 +274,52 @@ export const Auth = () => {
             </div>
 
             {/* Password */}
-            <div className="space-y-2">
-              <label className="text-sm font-black text-gray-400 uppercase tracking-widest mr-4">
+            <div className="space-y-1.5 sm:space-y-2">
+              <label className="text-xs sm:text-sm font-black text-gray-400 uppercase tracking-widest px-1">
                 {language === 'ar' ? 'كلمة المرور' : 'Password'}
               </label>
               <div className="relative">
-                <Lock className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500" size={20} />
+                <Lock className={`absolute ${language === 'ar' ? 'right-3.5 sm:right-4' : 'left-3.5 sm:left-4'} top-1/2 -translate-y-1/2 text-gray-500`} size={18} />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   required
-                  className="w-full bg-[#121E3D] border border-[#1C2E5A] rounded-2xl py-4 pr-12 pl-12 text-white focus:border-[#D4AF37] outline-none transition-all font-bold text-base md:text-lg"
+                  className="w-full bg-[#121E3D] border border-[#1C2E5A] rounded-xl sm:rounded-2xl py-3.5 sm:py-4 px-11 sm:px-12 text-white focus:border-[#D4AF37] outline-none transition-all font-bold text-base"
                   value={formData.password}
                   onChange={e => setFormData({...formData, password: e.target.value})}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors"
+                  className={`absolute ${language === 'ar' ? 'left-3.5 sm:left-4' : 'right-3.5 sm:right-4'} top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors p-1`}
                   aria-label={language === 'ar' ? (showPassword ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور') : (showPassword ? 'Hide password' : 'Show password')}
                 >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
             </div>
 
             {/* Confirm Password (Register only) */}
             {authState === 'register' && (
-              <div className="space-y-2">
-                <label className="text-sm font-black text-gray-400 uppercase tracking-widest mr-4">
+              <div className="space-y-1.5 sm:space-y-2">
+                <label className="text-xs sm:text-sm font-black text-gray-400 uppercase tracking-widest px-1">
                   {language === 'ar' ? 'تأكيد كلمة المرور' : 'Confirm Password'}
                 </label>
                 <div className="relative">
-                  <Lock className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500" size={20} />
+                  <Lock className={`absolute ${language === 'ar' ? 'right-3.5 sm:right-4' : 'left-3.5 sm:left-4'} top-1/2 -translate-y-1/2 text-gray-500`} size={18} />
                   <input
                     type={showConfirmPassword ? 'text' : 'password'}
                     required
-                    className="w-full bg-[#121E3D] border border-[#1C2E5A] rounded-2xl py-4 pr-12 pl-12 text-white focus:border-[#D4AF37] outline-none transition-all font-bold text-base md:text-lg"
+                    className="w-full bg-[#121E3D] border border-[#1C2E5A] rounded-xl sm:rounded-2xl py-3.5 sm:py-4 px-11 sm:px-12 text-white focus:border-[#D4AF37] outline-none transition-all font-bold text-base"
                     value={formData.confirmPassword}
                     onChange={e => setFormData({...formData, confirmPassword: e.target.value})}
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors"
+                    className={`absolute ${language === 'ar' ? 'left-3.5 sm:left-4' : 'right-3.5 sm:right-4'} top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors p-1`}
                     aria-label={language === 'ar' ? (showConfirmPassword ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور') : (showConfirmPassword ? 'Hide password' : 'Show password')}
                   >
-                    {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                    {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
               </div>
@@ -329,22 +329,24 @@ export const Auth = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#D4AF37] text-[#0A1128] py-5 rounded-2xl font-black text-base md:text-lg uppercase tracking-widest hover:bg-[#E5C158] transition-all shadow-xl shadow-[#D4AF37]/10 flex items-center justify-center gap-3 disabled:opacity-50 mt-8"
+              className="w-full bg-[#D4AF37] text-[#0A1128] py-4 sm:py-5 rounded-xl sm:rounded-2xl font-black text-sm sm:text-base uppercase tracking-widest hover:bg-[#E5C158] transition-all shadow-xl shadow-[#D4AF37]/10 flex items-center justify-center gap-2.5 sm:gap-3 disabled:opacity-50 mt-6 sm:mt-8"
             >
               {loading ? (
-               <Loader2 className="animate-spin" size={24} />
+               <Loader2 className="animate-spin" size={20} />
               ) : (
                 <>
-                  {authState === 'login' && <ShieldCheck size={24} />}
-                  {authState === 'register' && <User size={24} />}
-                  {authState === 'login' 
-                     ? (language === 'ar' ? 'تسجيل الدخول' : 'Sign In') 
-                     : (language === 'ar' ? 'إرسال طلب التسجيل' : 'Send Registration Request')}
+                  {authState === 'login' && <ShieldCheck size={20} />}
+                  {authState === 'register' && <User size={20} />}
+                  <span>
+                    {authState === 'login' 
+                       ? (language === 'ar' ? 'تسجيل الدخول' : 'Sign In') 
+                       : (language === 'ar' ? 'إرسال طلب التسجيل' : 'Send Registration Request')}
+                  </span>
                 </>
               )}
             </button>
 
-            <div className="pt-6 border-t border-[#1C2E5A] text-center flex flex-col gap-4">
+            <div className="pt-4 sm:pt-6 border-t border-[#1C2E5A] text-center flex flex-col gap-3">
               {authState !== 'login' && (
                 <button
                   type="button"
@@ -353,10 +355,10 @@ export const Auth = () => {
                     setError(null);
                     setSuccess(null);
                   }}
-                  className="text-sm font-black text-gray-400 uppercase tracking-widest hover:text-[#D4AF37] transition-all flex items-center justify-center gap-2 mx-auto"
+                  className="text-xs sm:text-sm font-black text-gray-400 uppercase tracking-widest hover:text-[#D4AF37] transition-all flex items-center justify-center gap-2 mx-auto py-1"
                 >
-                  {language === 'ar' ? 'العودة لتسجيل الدخول' : 'Back to Login'}
-                  {language === 'ar' ? <ArrowLeft size={16} /> : <ArrowRight size={16} />}
+                  <span>{language === 'ar' ? 'العودة لتسجيل الدخول' : 'Back to Login'}</span>
+                  {language === 'ar' ? <ArrowLeft size={14} /> : <ArrowRight size={14} />}
                 </button>
               )}
               
@@ -368,10 +370,10 @@ export const Auth = () => {
                     setError(null);
                     setSuccess(null);
                   }}
-                  className="text-sm font-black text-gray-400 uppercase tracking-widest hover:text-[#D4AF37] transition-all flex items-center justify-center gap-2 mx-auto"
+                  className="text-xs sm:text-sm font-black text-gray-400 uppercase tracking-widest hover:text-[#D4AF37] transition-all flex items-center justify-center gap-2 mx-auto py-1"
                 >
-                  {language === 'ar' ? 'طلب حساب جديد' : "Request New Account"}
-                  {language === 'ar' ? <ArrowLeft size={16} /> : <ArrowRight size={16} />}
+                  <span>{language === 'ar' ? 'طلب حساب جديد' : "Request New Account"}</span>
+                  {language === 'ar' ? <ArrowLeft size={14} /> : <ArrowRight size={14} />}
                 </button>
               )}
             </div>

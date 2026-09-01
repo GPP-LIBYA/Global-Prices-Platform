@@ -63,21 +63,21 @@ export const AccessRestricted = () => {
   };
 
   return (
-    <div className="py-20 flex items-center justify-center container mx-auto px-4">
+    <div className="py-12 sm:py-20 flex items-center justify-center container mx-auto px-4">
       <motion.div 
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="max-w-2xl w-full bg-[#0A1128] border border-[#1C2E5A] rounded-[3rem] p-12 text-center shadow-2xl relative overflow-hidden"
+        className="max-w-2xl w-full bg-[#0A1128] border border-[#1C2E5A] rounded-2xl sm:rounded-[3rem] p-6 sm:p-10 md:p-12 text-center shadow-2xl relative overflow-hidden"
       >
-        <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent opacity-50"></div>
+        <div className="absolute top-0 left-0 w-full h-1.5 sm:h-2 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent opacity-50"></div>
         
-        <div className="w-24 h-24 bg-[#121E3D] border border-[#1C2E5A] rounded-[2rem] flex items-center justify-center text-[#D4AF37] mx-auto mb-8 shadow-xl">
+        <div className="w-16 h-16 sm:w-24 sm:h-24 bg-[#121E3D] border border-[#1C2E5A] rounded-2xl sm:rounded-[2rem] flex items-center justify-center text-[#D4AF37] mx-auto mb-6 sm:mb-8 shadow-xl">
           {getIcon()}
         </div>
         
-        <h2 className="text-3xl font-black text-white mb-6 uppercase tracking-tight">{getTitle()}</h2>
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-white mb-4 sm:mb-6 uppercase tracking-tight">{getTitle()}</h2>
         
-        <p className="text-gray-400 text-lg md:text-xl font-bold leading-relaxed mb-10 whitespace-pre-line">
+        <p className="text-gray-400 text-sm sm:text-lg md:text-xl font-bold leading-relaxed mb-8 sm:mb-10 whitespace-pre-line">
           {getMessage()}
         </p>
 
@@ -85,7 +85,7 @@ export const AccessRestricted = () => {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <button 
               onClick={() => navigate('/auth')}
-              className="w-full sm:w-auto bg-[#D4AF37] text-[#0A1128] px-10 py-5 rounded-2xl font-black text-base md:text-lg uppercase tracking-widest hover:bg-[#E5C158] transition-all shadow-xl shadow-[#D4AF37]/10"
+              className="w-full sm:w-auto bg-[#D4AF37] text-[#0A1128] px-6 sm:px-10 py-4 sm:py-5 rounded-xl sm:rounded-2xl font-black text-sm sm:text-base md:text-lg uppercase tracking-widest hover:bg-[#E5C158] transition-all shadow-xl shadow-[#D4AF37]/10"
             >
               {language === 'ar' ? 'تسجيل الدخول / طلب حساب' : 'Sign In / Request Account'}
             </button>
@@ -99,16 +99,16 @@ export const AccessRestricted = () => {
                 await supabase.auth.signOut();
                 navigate('/');
               }}
-              className="w-full sm:w-auto bg-[#1C2E5A] text-white px-10 py-5 rounded-2xl font-black text-base md:text-lg uppercase tracking-widest hover:bg-[#25396D] transition-all shadow-xl border border-[#2A4075]"
+              className="w-full sm:w-auto bg-[#1C2E5A] text-white px-6 sm:px-10 py-4 sm:py-5 rounded-xl sm:rounded-2xl font-black text-sm sm:text-base md:text-lg uppercase tracking-widest hover:bg-[#25396D] transition-all shadow-xl border border-[#2A4075]"
             >
               {language === 'ar' ? 'تسجيل الخروج والرجوع' : 'Logout and Go Back'}
             </button>
           </div>
         )}
 
-        <div className="mt-12 pt-12 border-t border-[#1C2E5A]">
-           <p className="text-[10px] text-gray-600 font-black uppercase tracking-[0.3em]">
-             {language === 'ar' ? 'منصة الأسعار العالمية GCP - قسم التحليل الفني' : 'Global Pricing Platform - Technical Analysis Division'}
+        <div className="mt-8 sm:mt-12 pt-6 sm:pt-12 border-t border-[#1C2E5A]">
+           <p className="text-[10px] text-gray-600 font-black uppercase tracking-[0.2em] sm:tracking-[0.3em]">
+             {language === 'ar' ? 'منصة الأسعار العالمية GPP - قسم التحليل الفني' : 'Global Pricing Platform - Technical Analysis Division'}
            </p>
         </div>
       </motion.div>

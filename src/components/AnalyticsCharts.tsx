@@ -9,7 +9,7 @@ import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { supabase } from '../lib/supabase';
-import { exportChartToPNG, renderChartCanvas, renderTableReportCanvas } from '../utils/exportChart';
+import { exportChartToPNG, renderChartCanvas } from '../utils/exportChart';
 import { formatDisplayDate, formatDisplayDateTime } from '../utils/formatDate';
 import { aggregateDailyLastPrices, getSectorLabel, DailyAggregatedPoint } from '../utils/dailyPriceAggregator';
 
@@ -360,23 +360,45 @@ export const AnalyticsCharts = () => {
 
       doc.addImage(imgData, 'PNG', 10, 10, imgWidth, Math.min(imgHeight, 180));
 
-      // 2. Add Second Page with Official Data Tables & Summary KPIs
-      const tableCanvas = await renderTableReportCanvas({
-        data: historyChartData,
-        element: null,
-        filename: `${selectedSymbol}_Table`,
-        title: language === 'ar' ? 'جدول السجلات اليومية المجمعة' : 'Daily Aggregated Price History',
-        subtitle: subtitle,
-        dateRange: dateRangeStr,
-        theme: 'dark',
-        logoUrl: settings.siteLogo || "https://i.postimg.cc/vTzC2Jbx/January-05-2026-1-removebg-preview.png",
-        language: language as 'ar' | 'en'
-      });
-
+      // 2. Add Second Page with Official Data Tables
       doc.addPage();
-      const tableImgData = tableCanvas.toDataURL('image/png');
-      const tableImgHeight = (tableCanvas.height * imgWidth) / tableCanvas.width;
-      doc.addImage(tableImgData, 'PNG', 10, 10, imgWidth, Math.min(tableImgHeight, 180));
+      doc.setFontSize(16);
+      doc.setTextColor(18, 30, 61);
+      doc.text(
+        `${language === 'ar' ? 'جدول السجلات اليومية المجمعة' : 'Daily Aggregated Price History'} - ${commName} (${selectedSymbol})`,
+        isRtl ? pageWidth - 14 : 14,
+        18,
+        { align: isRtl ? 'right' : 'left' }
+      );
+
+      const historyDataRows = getDailyHistoryExportData();
+      if (historyDataRows.length > 0) {
+        const tableColumn = Object.keys(historyDataRows[0]);
+        const tableRows = historyDataRows.map(item => Object.values(item));
+
+        autoTable(doc, {
+          head: [tableColumn],
+          body: tableRows,
+          startY: 25,
+          theme: 'striped',
+          headStyles: { fillColor: [18, 30, 61], textColor: [212, 175, 55], fontStyle: 'bold' },
+          styles: { fontSize: 10, cellPadding: 3, halign: isRtl ? 'right' : 'left' }
+        });
+      }
+
+      // Footer
+      const pageCount = (doc as any).internal.getNumberOfPages();
+      for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFontSize(9);
+        doc.setTextColor(120, 120, 120);
+        doc.text(
+          `Global Pricing Platform (GCP) • © Libya Trade Network • Generated: ${formatDisplayDateTime(new Date())} • Page ${i} of ${pageCount}`,
+          pageWidth / 2,
+          doc.internal.pageSize.getHeight() - 6,
+          { align: 'center' }
+        );
+      }
 
       doc.save(`${selectedSymbol}_Analytics_Report.pdf`);
     } catch (err) {
