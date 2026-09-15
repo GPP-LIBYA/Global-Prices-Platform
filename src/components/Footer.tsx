@@ -11,6 +11,7 @@ interface FooterLogoItem {
   storage_path: string;
   link_url?: string | null;
   display_order: number;
+  logo_height?: number | null;
   imageUrl?: string;
 }
 
@@ -41,7 +42,7 @@ export const Footer = () => {
       console.log('[Footer] Executing query on public.footer_logos...');
       const { data, error } = await supabase
         .from('footer_logos')
-        .select('id, name, storage_path, link_url, display_order')
+        .select('id, name, storage_path, link_url, display_order, logo_height')
         .eq('is_active', true)
         .order('display_order', { ascending: true });
 
@@ -266,8 +267,14 @@ export const Footer = () => {
                       src={logo.imageUrl}
                       alt={logo.name || 'Footer Logo'}
                       title={logo.name || undefined}
-                      className="h-[28px] sm:h-[32px] lg:h-[36px] max-h-[40px] w-auto object-contain transition-all duration-200 opacity-90 hover:opacity-100 hover:scale-105"
-                      style={{ display: 'inline-block', visibility: 'visible' }}
+                      className="max-w-full max-h-[85px] sm:max-h-[100px] transition-all duration-200 opacity-90 hover:opacity-100 hover:scale-105"
+                      style={{
+                        height: `${logo.logo_height || 36}px`,
+                        width: 'auto',
+                        objectFit: 'contain',
+                        display: 'inline-block',
+                        visibility: 'visible'
+                      }}
                       loading="lazy"
                       onError={() => {
                         console.warn(`[Footer] Failed to render image for logo ID: ${logo.id}, URL: ${logo.imageUrl}`);
