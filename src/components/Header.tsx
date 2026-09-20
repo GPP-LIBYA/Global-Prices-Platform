@@ -16,6 +16,11 @@ export const Header = () => {
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [headerImgFailed, setHeaderImgFailed] = useState(false);
+
+  React.useEffect(() => {
+    setHeaderImgFailed(false);
+  }, [settings.headerLogoUrl, settings.siteLogo]);
 
   const navigate = useNavigate();
 
@@ -55,27 +60,65 @@ export const Header = () => {
         : 'text-gray-300 hover:text-white hover:bg-[#1C2E5A]/30 rounded-lg'
     }`;
 
+  const getHeaderBrandAlignClass = () => {
+    const align = settings.headerLogoAlignment || 'right';
+    if (align === 'center') return 'justify-center';
+    if (align === 'left') {
+      return language === 'ar' ? 'justify-end' : 'justify-start';
+    }
+    // 'right'
+    return language === 'ar' ? 'justify-start' : 'justify-end';
+  };
+
+  const isLogoBefore = (settings.headerLogoOrder || 'before_text') === 'before_text';
+  const logoSrc = settings.headerLogoUrl || settings.siteLogo || 'https://i.postimg.cc/vTzC2Jbx/January-05-2026-1-removebg-preview.png';
+
+  const logoNode = settings.headerLogoEnabled && !headerImgFailed ? (
+    <img
+      src={logoSrc}
+      alt={language === 'ar' ? settings.siteNameAr : settings.siteNameEn}
+      className="object-contain transition-all shrink-0 max-h-16 md:max-h-20"
+      style={{
+        height: `${settings.headerLogoHeight || 40}px`,
+        width: 'auto',
+        objectFit: 'contain'
+      }}
+      onError={() => setHeaderImgFailed(true)}
+      referrerPolicy="no-referrer"
+    />
+  ) : null;
+
+  const textNode = (
+    <div className={settings.headerLogoAlignment === 'center' ? 'text-center' : ''}>
+      <h1 className="text-base sm:text-lg font-bold text-white tracking-wide whitespace-nowrap">
+        {language === 'ar' ? settings.siteNameAr : settings.siteNameEn}
+      </h1>
+    </div>
+  );
+
   return (
     <header className="bg-[#0A1128] border-b border-[#1C2E5A] sticky top-0 z-50">
-      <div className="container mx-auto px-4 h-20 flex items-center justify-between">
-        {/* Logo */}
-        <Link to="/" className="flex items-center gap-3">
-          <img
-            src={
-              settings.siteLogo ||
-              'https://i.postimg.cc/vTzC2Jbx/January-05-2026-1-removebg-preview.png'
-            }
-            alt="Logo"
-            className="w-12 h-12 object-contain"
-            referrerPolicy="no-referrer"
-          />
-
-          <div>
-            <h1 className="text-lg font-bold text-white tracking-wide">
-              {language === 'ar' ? settings.siteNameAr : settings.siteNameEn}
-            </h1>
-          </div>
-        </Link>
+      <div className="container mx-auto px-4 min-h-20 py-2 flex items-center justify-between gap-4">
+        {/* Logo / Brand Group */}
+        <div className={`flex items-center ${getHeaderBrandAlignClass()} shrink-0`}>
+          <Link
+            to="/"
+            className="flex items-center transition-opacity hover:opacity-95"
+            style={{ gap: `${settings.headerLogoGap !== undefined ? settings.headerLogoGap : 12}px` }}
+          >
+            {isLogoBefore ? (
+              <>
+                {logoNode}
+                {textNode}
+              </>
+            ) : (
+              <>
+                {textNode}
+                {logoNode}
+              </>
+            )}
+          </Link>
+        </div>
 
         {/* Navigation - Desktop */}
         <nav className="hidden lg:flex items-center gap-8">
