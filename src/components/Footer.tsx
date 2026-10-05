@@ -158,12 +158,15 @@ export const Footer = () => {
           {/* Brand */}
           <div className="lg:col-span-1">
             <div className="flex items-center gap-3 mb-6">
-              <img 
-                src={settings.siteLogo || "https://i.postimg.cc/vTzC2Jbx/January-05-2026-1-removebg-preview.png"} 
-                alt="Logo" 
-                className="w-12 h-12 object-contain" 
-                referrerPolicy="no-referrer" 
-              />
+              {(settings.headerLogoUrl || settings.siteLogo) && (
+                <img 
+                  src={settings.headerLogoUrl || settings.siteLogo} 
+                  alt="Logo" 
+                  className="w-12 h-12 object-contain" 
+                  referrerPolicy="no-referrer" 
+                  onError={(e) => { (e.currentTarget as HTMLElement).style.display = 'none'; }}
+                />
+              )}
               <div>
                 <h2 className="text-xl font-bold text-white tracking-wide">
                   {language === 'ar' ? settings.siteNameAr : settings.siteNameEn}

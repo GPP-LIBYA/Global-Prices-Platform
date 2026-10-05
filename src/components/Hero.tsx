@@ -1,19 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { ArrowRight, BarChart2, Globe2, ShieldCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
-import { useSettings } from '../context/SettingsContext';
+import { useSettings, resolvePlatformLogoUrl } from '../context/SettingsContext';
 
 export const Hero = () => {
   const { t, language } = useLanguage();
-  const { settings } = useSettings();
+  const { settings, settingsLoaded } = useSettings();
   const navigate = useNavigate();
-
-  const [heroImgFailed, setHeroImgFailed] = useState(false);
-
-  useEffect(() => {
-    setHeroImgFailed(false);
-  }, [settings.heroLogoUrl, settings.siteLogo]);
 
   const handleExploreMarkets = () => {
     navigate('/markets');
@@ -61,8 +55,14 @@ export const Hero = () => {
   };
 
   const orders = getHeroOrderClasses();
-  const shouldRenderLogo = settings.heroLogoEnabled && !heroImgFailed;
-  const heroLogoSrc = settings.heroLogoUrl || settings.siteLogo || 'https://i.postimg.cc/vTzC2Jbx/January-05-2026-1-removebg-preview.png';
+
+  // Resolved Hero Logo URL
+  const resolvedHeroLogoUrl = resolvePlatformLogoUrl(settings.heroLogoPath || settings.heroLogoUrl);
+
+  // Dynamic Hero Logo Display:
+  // - Loading settings: no hero logo rendered (no old logo flash)
+  // - Settings loaded: render ONLY if hero logo is enabled and valid URL is resolved
+  const shouldRenderLogo = settingsLoaded && settings.heroLogoEnabled && Boolean(resolvedHeroLogoUrl);
 
   return (
     <section className="relative py-10 md:py-20 lg:py-32 overflow-hidden">
@@ -91,17 +91,18 @@ export const Hero = () => {
                 }}
               >
                 <img 
-                  src={heroLogoSrc} 
+                  src={resolvedHeroLogoUrl} 
                   alt="Logo" 
-                  className="object-contain animate-pulse drop-shadow-[0_0_15px_rgba(212,175,55,0.5)]" 
+                  className="object-contain drop-shadow-[0_0_15px_rgba(212,175,55,0.5)]" 
                   style={{
                     width: `${settings.heroLogoSize || 160}px`,
                     height: 'auto',
                     maxWidth: '85vw',
                     objectFit: 'contain'
                   }}
-                  onError={() => setHeroImgFailed(true)}
-                  referrerPolicy="no-referrer" 
+                  onError={() => {
+                    console.warn('[Hero Logo] Image failed to render:', resolvedHeroLogoUrl);
+                  }}
                 />
                 <p className="text-[#D4AF37] text-xs md:text-sm font-medium mt-2 tracking-wider uppercase">
                   {t('poweredBy')}

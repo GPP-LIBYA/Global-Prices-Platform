@@ -3,12 +3,12 @@ import { Search, Menu, User, Globe, LogOut, X } from 'lucide-react';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { useLanguage } from '../context/LanguageContext';
-import { useSettings } from '../context/SettingsContext';
+import { useSettings, resolvePlatformLogoUrl } from '../context/SettingsContext';
 import { useAuth } from '../context/AuthContext';
 
 export const Header = () => {
   const { t, language, setLanguage } = useLanguage();
-  const { settings, loading: settingsLoading } = useSettings();
+  const { settings, loading: settingsLoading, settingsLoaded } = useSettings();
   const { user, platformUser, authLoading, platformUserLoading, signOut } = useAuth();
 
   console.log('HEADER USER:', !!user);
@@ -16,11 +16,7 @@ export const Header = () => {
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [headerImgFailed, setHeaderImgFailed] = useState(false);
-
-  React.useEffect(() => {
-    setHeaderImgFailed(false);
-  }, [settings.headerLogoUrl, settings.siteLogo]);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   const navigate = useNavigate();
 
@@ -71,20 +67,29 @@ export const Header = () => {
   };
 
   const isLogoBefore = (settings.headerLogoOrder || 'before_text') === 'before_text';
-  const logoSrc = settings.headerLogoUrl || settings.siteLogo || 'https://i.postimg.cc/vTzC2Jbx/January-05-2026-1-removebg-preview.png';
 
-  const logoNode = settings.headerLogoEnabled && !headerImgFailed ? (
+  // Resolved Header Logo URL
+  const resolvedHeaderLogoUrl = resolvePlatformLogoUrl(settings.headerLogoPath || settings.headerLogoUrl);
+
+  // Dynamic Header Logo Display:
+  // - Loading settings: no logo rendered (no old logo flash)
+  // - Settings loaded: render only if enabled and valid URL is resolved
+  const shouldRenderLogo = settingsLoaded && settings.headerLogoEnabled && Boolean(resolvedHeaderLogoUrl);
+
+  const logoNode = shouldRenderLogo ? (
     <img
-      src={logoSrc}
+      src={resolvedHeaderLogoUrl}
       alt={language === 'ar' ? settings.siteNameAr : settings.siteNameEn}
-      className="object-contain transition-all shrink-0 max-h-16 md:max-h-20"
+      className={`object-contain transition-opacity duration-200 shrink-0 max-h-16 md:max-h-20 ${imageLoaded ? 'opacity-100' : 'opacity-95'}`}
       style={{
         height: `${settings.headerLogoHeight || 40}px`,
         width: 'auto',
         objectFit: 'contain'
       }}
-      onError={() => setHeaderImgFailed(true)}
-      referrerPolicy="no-referrer"
+      onLoad={() => setImageLoaded(true)}
+      onError={() => {
+        console.warn('[Header Logo] Image failed to render:', resolvedHeaderLogoUrl);
+      }}
     />
   ) : null;
 
@@ -104,7 +109,7 @@ export const Header = () => {
           <Link
             to="/"
             className="flex items-center transition-opacity hover:opacity-95"
-            style={{ gap: `${settings.headerLogoGap !== undefined ? settings.headerLogoGap : 12}px` }}
+            style={{ gap: shouldRenderLogo ? `${settings.headerLogoGap !== undefined ? settings.headerLogoGap : 12}px` : '0px' }}
           >
             {isLogoBefore ? (
               <>

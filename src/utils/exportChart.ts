@@ -47,7 +47,7 @@ export const renderChartCanvas = async ({
   subtitle,
   dateRange,
   theme = 'dark',
-  logoUrl = 'https://i.postimg.cc/vTzC2Jbx/January-05-2026-1-removebg-preview.png',
+  logoUrl = '',
   language = 'ar'
 }: ExportOptions): Promise<HTMLCanvasElement> => {
   // Ensure custom web fonts (Tajawal, etc.) are fully settled

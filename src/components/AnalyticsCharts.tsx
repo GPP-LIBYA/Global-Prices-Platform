@@ -316,7 +316,7 @@ export const AnalyticsCharts = () => {
         subtitle: subtitle,
         dateRange: dateRangeStr,
         theme: 'dark',
-        logoUrl: settings.siteLogo || "https://i.postimg.cc/vTzC2Jbx/January-05-2026-1-removebg-preview.png",
+        logoUrl: settings.headerLogoUrl || settings.heroLogoUrl || settings.siteLogo || undefined,
         language: language as 'ar' | 'en'
       });
     } catch (err) {
@@ -352,7 +352,7 @@ export const AnalyticsCharts = () => {
         subtitle: subtitle,
         dateRange: dateRangeStr,
         theme: 'dark',
-        logoUrl: settings.siteLogo || "https://i.postimg.cc/vTzC2Jbx/January-05-2026-1-removebg-preview.png",
+        logoUrl: settings.headerLogoUrl || settings.heroLogoUrl || settings.siteLogo || undefined,
         language: language as 'ar' | 'en'
       });
 
@@ -578,12 +578,14 @@ export const AnalyticsCharts = () => {
                 <div className="relative w-full h-full rounded-xl overflow-hidden">
                   
                   {/* Single Source of Truth Watermark */}
-                  <img
-                    src={settings.siteLogo || "https://i.postimg.cc/vTzC2Jbx/January-05-2026-1-removebg-preview.png"}
-                    alt="watermark"
-                    data-watermark="true"
-                    className="absolute inset-0 m-auto w-36 md:w-56 opacity-5 pointer-events-none select-none z-0"
-                  />
+                  {(settings.headerLogoUrl || settings.heroLogoUrl || settings.siteLogo) && (
+                    <img
+                      src={settings.headerLogoUrl || settings.heroLogoUrl || settings.siteLogo}
+                      alt="watermark"
+                      data-watermark="true"
+                      className="absolute inset-0 m-auto w-36 md:w-56 opacity-5 pointer-events-none select-none z-0"
+                    />
+                  )}
 
                   {/* Recharts High-Contrast Line Chart */}
                   {isReady && historyChartData.length > 0 && (

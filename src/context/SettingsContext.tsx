@@ -44,22 +44,54 @@ export interface SiteSettings {
   heroLogoUrl: string;
 }
 
-export const getPlatformLogoUrl = (path?: string | null): string => {
-  if (!path) return '';
-  const trimmed = path.trim();
+export const resolvePlatformLogoUrl = (value?: string | null): string => {
+  if (!value) return '';
+  const trimmed = String(value).trim();
   if (!trimmed) return '';
   if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
     return trimmed;
   }
   let cleanPath = trimmed.startsWith('/') ? trimmed.slice(1) : trimmed;
   if (cleanPath.startsWith('platform-logos/')) {
-    cleanPath = cleanPath.replace('platform-logos/', '');
+    cleanPath = cleanPath.slice('platform-logos/'.length);
   }
+  if (!cleanPath) return '';
   try {
     const { data } = supabase.storage.from('platform-logos').getPublicUrl(cleanPath);
     return data?.publicUrl || '';
-  } catch {
+  } catch (err) {
+    console.error('Failed to resolve platform logo publicUrl:', err);
     return '';
+  }
+};
+
+export const getPlatformLogoUrl = resolvePlatformLogoUrl;
+
+export const parseLogoEnabled = (val: any): boolean => {
+  if (val === undefined || val === null || val === '') return false;
+  if (typeof val === 'boolean') return val;
+  if (typeof val === 'number') return val === 1;
+  if (typeof val === 'string') {
+    const lower = val.trim().toLowerCase();
+    if (lower === 'true' || lower === '1' || lower === 'enabled' || lower === 'on' || lower === 'yes') {
+      return true;
+    }
+    if (lower === 'false' || lower === '0' || lower === 'disabled' || lower === 'off' || lower === 'no') {
+      return false;
+    }
+  }
+  return false;
+};
+
+export const preloadImage = (url?: string | null) => {
+  if (!url || typeof window === 'undefined') return;
+  const trimmed = url.trim();
+  if (!trimmed) return;
+  try {
+    const img = new Image();
+    img.src = trimmed;
+  } catch {
+    // ignore preload error so it never blocks UI rendering
   }
 };
 
@@ -68,7 +100,7 @@ const defaultSettings: SiteSettings = {
   siteNameEn: 'Global Pricing Platform',
   descriptionAr: 'المنصة الرائدة لتتبع أسعار السلع والمعادن العالمية لحظة بلحظة مع تحليلات دقيقة وتقارير حصرية.',
   descriptionEn: 'The leading platform for tracking global commodity and metal prices in real-time with accurate analytics and exclusive reports.',
-  siteLogo: 'https://i.postimg.cc/vTzC2Jbx/January-05-2026-1-removebg-preview.png',
+  siteLogo: '',
   faviconUrl: '/favicon.ico',
   isSiteActive: true,
   maintenanceTitleAr: 'وضع الصيانة',
@@ -106,19 +138,22 @@ const defaultSettings: SiteSettings = {
   heroLogoUrl: ''
 };
 
-interface SettingsContextType {
+export interface SettingsContextType {
   settings: SiteSettings;
   loading: boolean;
+  settingsLoaded: boolean;
 }
 
 const SettingsContext = createContext<SettingsContextType>({
   settings: defaultSettings,
-  loading: true
+  loading: true,
+  settingsLoaded: false
 });
 
 export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [settings, setSettings] = useState<SiteSettings>(defaultSettings);
   const [loading, setLoading] = useState(true);
+  const [settingsLoaded, setSettingsLoaded] = useState(false);
   const fetchedRef = React.useRef(false);
 
   useEffect(() => {
@@ -170,21 +205,48 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           data.forEach(item => {
             settingsMap[item.key] = item.value;
           });
-          setSettings(prev => {
-            const hPath = settingsMap.header_logo_path !== undefined 
-              ? String(settingsMap.header_logo_path).trim() 
-              : prev.headerLogoPath;
-            const heroPath = settingsMap.hero_logo_path !== undefined 
-              ? String(settingsMap.hero_logo_path).trim() 
-              : prev.heroLogoPath;
+          const hPathRaw = settingsMap.header_logo_path !== undefined 
+            ? String(settingsMap.header_logo_path).trim() 
+            : undefined;
+          const heroPathRaw = settingsMap.hero_logo_path !== undefined 
+            ? String(settingsMap.hero_logo_path).trim() 
+            : undefined;
 
+          const hUrl = resolvePlatformLogoUrl(hPathRaw);
+          const heroUrl = resolvePlatformLogoUrl(heroPathRaw);
+
+          // Fast Image Preload to reduce visual wait time
+          if (hUrl) preloadImage(hUrl);
+          if (heroUrl) preloadImage(heroUrl);
+
+          const hEnabled = settingsMap.header_logo_enabled !== undefined
+            ? parseLogoEnabled(settingsMap.header_logo_enabled)
+            : true;
+          const heroEnabled = settingsMap.hero_logo_enabled !== undefined
+            ? parseLogoEnabled(settingsMap.hero_logo_enabled)
+            : true;
+
+          // Temporary Development Diagnostic
+          if (typeof window !== 'undefined') {
+            console.log('[PlatformSettings Diagnostic]', {
+              header_logo_enabled: hEnabled,
+              header_logo_path: hPathRaw || '',
+              hero_logo_enabled: heroEnabled,
+              hero_logo_path: heroPathRaw || '',
+              settingsLoaded: true
+            });
+          }
+
+          setSettings(prev => {
+            const hPath = hPathRaw !== undefined ? hPathRaw : prev.headerLogoPath;
+            const heroPath = heroPathRaw !== undefined ? heroPathRaw : prev.heroLogoPath;
             return {
               ...prev,
               siteNameAr: settingsMap.platform_name_ar || prev.siteNameAr,
               siteNameEn: settingsMap.platform_name_en || prev.siteNameEn,
               descriptionAr: settingsMap.platform_description_ar || prev.descriptionAr,
               descriptionEn: settingsMap.platform_description_en || prev.descriptionEn,
-              siteLogo: settingsMap.platform_logo_url || prev.siteLogo,
+              siteLogo: settingsMap.platform_logo_url || prev.siteLogo || '',
               faviconUrl: settingsMap.platform_favicon_url || prev.faviconUrl,
               isSiteActive: settingsMap.platform_status === 'maintenance' ? false : true,
               maintenanceTitleAr: settingsMap.maintenance_title_ar || prev.maintenanceTitleAr,
@@ -206,9 +268,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
                 : prev.authUiEnabled,
 
               // Header Logo
-              headerLogoEnabled: settingsMap.header_logo_enabled !== undefined 
-                ? parseBoolean(settingsMap.header_logo_enabled, true) 
-                : prev.headerLogoEnabled,
+              headerLogoEnabled: hEnabled,
               headerLogoPath: hPath,
               headerLogoHeight: settingsMap.header_logo_height !== undefined 
                 ? parseNumber(settingsMap.header_logo_height, 40, 20, 80) 
@@ -222,12 +282,10 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
               headerLogoGap: settingsMap.header_logo_gap !== undefined 
                 ? parseNumber(settingsMap.header_logo_gap, 12, 0, 40) 
                 : prev.headerLogoGap,
-              headerLogoUrl: getPlatformLogoUrl(hPath),
+              headerLogoUrl: hUrl,
 
               // Hero Logo
-              heroLogoEnabled: settingsMap.hero_logo_enabled !== undefined 
-                ? parseBoolean(settingsMap.hero_logo_enabled, true) 
-                : prev.heroLogoEnabled,
+              heroLogoEnabled: heroEnabled,
               heroLogoPath: heroPath,
               heroLogoSize: settingsMap.hero_logo_size !== undefined 
                 ? parseNumber(settingsMap.hero_logo_size, 160, 80, 400) 
@@ -241,14 +299,15 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
               heroLogoOffsetY: settingsMap.hero_logo_offset_y !== undefined 
                 ? parseNumber(settingsMap.hero_logo_offset_y, 0, -100, 100) 
                 : prev.heroLogoOffsetY,
-              heroLogoUrl: getPlatformLogoUrl(heroPath),
+              heroLogoUrl: heroUrl,
             };
           });
         }
       } catch (err) {
         console.error('Exception fetching platform settings:', err);
       } finally {
-        if (isMounted) setLoading(false);
+        setLoading(false);
+        setSettingsLoaded(true);
       }
     };
 
@@ -301,7 +360,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   }, [settings.siteNameAr, settings.siteNameEn, settings.faviconUrl]);
 
   return (
-    <SettingsContext.Provider value={{ settings, loading }}>
+    <SettingsContext.Provider value={{ settings, loading, settingsLoaded }}>
       {children}
     </SettingsContext.Provider>
   );
