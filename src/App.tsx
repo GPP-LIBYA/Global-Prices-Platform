@@ -113,7 +113,7 @@ const MaintenanceMode = () => {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#D4AF37] opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-[#D4AF37]"></span>
           </span>
-          <span>{language === 'ar' ? 'وضع الصيانة المجدولة' : 'Scheduled Maintenance'}</span>
+          <span>{language === 'ar' ? 'وضع الصيانة' : 'Maintenance Mode'}</span>
         </div>
 
         {/* Title */}
