@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:production": "VITE_DEPLOY_TARGET=production vite build",
+    "build:github-pages": "VITE_DEPLOY_TARGET=github-pages vite build",
     "start": "vite preview",
     "preview": "vite preview",
     "clean": "rm -rf dist",
