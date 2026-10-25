@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120" width="400" height="120">
+  <defs>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E5C158" />
+      <stop offset="50%" stop-color="#D4AF37" />
+      <stop offset="100%" stop-color="#9A7B1C" />
+    </linearGradient>
+    <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2A4075" />
+      <stop offset="100%" stop-color="#121E3D" />
+    </linearGradient>
+  </defs>
+
+  <!-- Geometric Emblem / Icon -->
+  <g transform="translate(20, 15)">
+    <!-- Outer hexagon/shield background -->
+    <path d="M 45 5 L 80 25 L 80 65 L 45 85 L 10 65 L 10 25 Z" fill="url(#blueGrad)" stroke="url(#goldGrad)" stroke-width="2.5" />
+    
+    <!-- Central dynamic trading arcs / network nodes -->
+    <circle cx="45" cy="45" r="24" fill="none" stroke="url(#goldGrad)" stroke-width="2" stroke-dasharray="4 2" />
+    <path d="M 28 45 Q 45 22 62 45 Q 45 68 28 45 Z" fill="url(#goldGrad)" opacity="0.85" />
+    <circle cx="45" cy="45" r="7" fill="#FFFFFF" />
+    <circle cx="45" cy="45" r="4" fill="#0A1128" />
+
+    <!-- Network connection points -->
+    <circle cx="45" cy="18" r="3" fill="#D4AF37" />
+    <circle cx="70" cy="32" r="3" fill="#D4AF37" />
+    <circle cx="70" cy="58" r="3" fill="#D4AF37" />
+    <circle cx="45" cy="72" r="3" fill="#D4AF37" />
+    <circle cx="20" cy="58" r="3" fill="#D4AF37" />
+    <circle cx="20" cy="32" r="3" fill="#D4AF37" />
+  </g>
+
+  <!-- Typography -->
+  <g fill="#FFFFFF" font-family="'Tajawal', system-ui, -apple-system, sans-serif">
+    <!-- Arabic Brand Name -->
+    <text x="120" y="50" font-size="24" font-weight="800" fill="#FFFFFF" letter-spacing="0.5">شبكة ليبيا للتجارة</text>
+    
+    <!-- English Subtitle / Brand Name -->
+    <text x="122" y="74" font-size="12" font-weight="700" fill="#D4AF37" letter-spacing="2">LIBYA TRADE NETWORK</text>
+    <text x="122" y="92" font-size="9" font-weight="500" fill="#94A3B8" letter-spacing="1">GLOBAL PRICES PLATFORM • GPP</text>
+  </g>
+</svg>

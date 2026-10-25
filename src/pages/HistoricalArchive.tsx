@@ -10,9 +10,12 @@ import { exportChartToPNG } from '../utils/exportChart';
 import { formatDisplayDate } from '../utils/formatDate';
 import { aggregateDailyLastPrices } from '../utils/dailyPriceAggregator';
 import { useChartContainer } from '../hooks/useChartContainer';
+import { useSettings } from '../context/SettingsContext';
+import { ChartWatermark, getPlatformWatermarkUrl } from '../components/ChartWatermark';
 
 export const HistoricalArchive = () => {
   const { t, language } = useLanguage();
+  const { settings } = useSettings();
   const { history: historyData, fetchHistory, historyLoading: marketLoading } = useMarketData();
   const [commodities, setCommodities] = useState<any[]>([]);
   const [selectedCommodityId, setSelectedCommodityId] = useState<string>('');
@@ -121,6 +124,7 @@ export const HistoricalArchive = () => {
         subtitle: commodityName,
         dateRange: dateRangeStr,
         theme: 'dark',
+        logoUrl: getPlatformWatermarkUrl(settings),
         language: language as 'ar' | 'en'
       });
     } catch (err) {
@@ -247,7 +251,9 @@ export const HistoricalArchive = () => {
                     <Download size={16} />
                   </button>
                   {/* Chart */}
-                  <div ref={chartRef} className="w-full h-[220px] sm:h-[280px] md:h-[360px] lg:h-[420px] mb-6 sm:mb-8 relative pt-10 min-w-0" dir="ltr">
+                  <div ref={chartRef} className="w-full h-[220px] sm:h-[280px] md:h-[360px] lg:h-[420px] mb-6 sm:mb-8 relative pt-10 min-w-0 overflow-hidden" dir="ltr">
+                    {/* Unified Platform Watermark */}
+                    <ChartWatermark opacity={0.07} />
                     {isReady && formattedHistory && formattedHistory.length > 0 && (
                     <ResponsiveContainer width="100%" height="100%">
                        <AreaChart data={formattedHistory}>

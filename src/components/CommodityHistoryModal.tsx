@@ -1,14 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, TrendingUp, TrendingDown, Minus, Activity, Info, Calendar, Download } from 'lucide-react';
+import { X, TrendingUp, TrendingDown, Minus, Activity, Info, Calendar, Download, FileText } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { supabase } from '../lib/supabase';
 import { useLanguage } from '../context/LanguageContext';
+import { useSettings } from '../context/SettingsContext';
 import { useChartContainer } from '../hooks/useChartContainer';
 import { PriceDisplay } from './PriceDisplay';
-import { exportChartToPNG } from '../utils/exportChart';
+import { exportChartToPNG, exportChartToPDF } from '../utils/exportChart';
 import { formatDisplayDate } from '../utils/formatDate';
 import { aggregateDailyLastPrices } from '../utils/dailyPriceAggregator';
+import { ChartWatermark, getPlatformWatermarkUrl } from './ChartWatermark';
 
 interface CommodityHistoryModalProps {
   commodity: any;
@@ -17,6 +19,7 @@ interface CommodityHistoryModalProps {
 
 export const CommodityHistoryModal: React.FC<CommodityHistoryModalProps> = ({ commodity, onClose }) => {
   const { t, language } = useLanguage();
+  const { settings } = useSettings();
   const [historyData, setHistoryData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [period, setPeriod] = useState<number | 'all'>(7); // days
@@ -105,7 +108,7 @@ export const CommodityHistoryModal: React.FC<CommodityHistoryModalProps> = ({ co
   const changePct = stats.firstPrice > 0 ? (changeVal / stats.firstPrice) * 100 : 0;
   const isUp = changeVal >= 0;
 
-  const handleExport = async () => {
+  const handleExportPNG = async () => {
     if (!chartRef.current || !commodity) return;
     try {
       const commodityName = language === 'ar' ? commodity.nameAr : commodity.nameEn;
@@ -121,10 +124,35 @@ export const CommodityHistoryModal: React.FC<CommodityHistoryModalProps> = ({ co
         subtitle: commodityName,
         dateRange: dateRangeStr,
         theme: 'dark',
+        logoUrl: getPlatformWatermarkUrl(settings),
         language: language as 'ar' | 'en'
       });
     } catch (err) {
       console.error('Error exporting chart to PNG:', err);
+    }
+  };
+
+  const handleExportPDF = async () => {
+    if (!chartRef.current || !commodity) return;
+    try {
+      const commodityName = language === 'ar' ? commodity.nameAr : commodity.nameEn;
+      const chartTitle = language === 'ar' ? 'المسار الزمني لحركة السعر' : 'Price Timeline Analysis';
+      const dateRangeStr = stats.firstDate && stats.lastDate ? 
+        `${formatDisplayDate(stats.firstDate)} - ${formatDisplayDate(stats.lastDate)}` : '';
+
+      await exportChartToPDF({
+        data: historyData,
+        element: chartRef.current,
+        filename: `${commodity.symbol || 'commodity'}_History`,
+        title: chartTitle,
+        subtitle: commodityName,
+        dateRange: dateRangeStr,
+        theme: 'dark',
+        logoUrl: getPlatformWatermarkUrl(settings),
+        language: language as 'ar' | 'en'
+      });
+    } catch (err) {
+      console.error('Error exporting chart to PDF:', err);
     }
   };
 
@@ -203,13 +231,24 @@ export const CommodityHistoryModal: React.FC<CommodityHistoryModalProps> = ({ co
                      {language === 'ar' ? 'المسار الزمني لحركة السعر' : 'Price Timeline Analysis'}
                   </h3>
                   {historyData.length >= 2 && (
-                    <button 
-                      onClick={handleExport}
-                      className="p-2 bg-[#121E3D] hover:bg-[#1C2E5A] border border-[#1C2E5A] text-[#D4AF37] rounded-lg transition-colors flex items-center justify-center"
-                      title={language === 'ar' ? 'تحميل الصورة' : 'Download Image'}
-                    >
-                      <Download size={16} />
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button 
+                        onClick={handleExportPNG}
+                        className="px-2.5 py-1.5 bg-[#121E3D] hover:bg-[#1C2E5A] border border-[#1C2E5A] hover:border-[#D4AF37]/50 text-[#D4AF37] rounded-lg transition-all flex items-center gap-1.5 text-xs font-bold"
+                        title={language === 'ar' ? 'تحميل صورة PNG' : 'Download PNG'}
+                      >
+                        <Download size={14} />
+                        <span>PNG</span>
+                      </button>
+                      <button 
+                        onClick={handleExportPDF}
+                        className="px-2.5 py-1.5 bg-[#121E3D] hover:bg-[#1C2E5A] border border-[#1C2E5A] hover:border-[#EF4444]/50 text-[#EF4444] rounded-lg transition-all flex items-center gap-1.5 text-xs font-bold"
+                        title={language === 'ar' ? 'تحميل تقرير PDF' : 'Download PDF'}
+                      >
+                        <FileText size={14} />
+                        <span>PDF</span>
+                      </button>
+                    </div>
                   )}
                </div>
                
@@ -230,7 +269,9 @@ export const CommodityHistoryModal: React.FC<CommodityHistoryModalProps> = ({ co
                     </p>
                  </div>
                ) : (
-                 <div ref={chartRef} className="w-full h-[240px] sm:h-[320px] md:h-[400px] min-w-0" dir="ltr">
+                 <div ref={chartRef} className="w-full h-[240px] sm:h-[320px] md:h-[400px] min-w-0 relative overflow-hidden" dir="ltr">
+                    {/* Unified Platform Watermark */}
+                    <ChartWatermark opacity={0.07} />
                     <ResponsiveContainer width="100%" height="100%">
                        <AreaChart data={historyData}>
                           <defs>

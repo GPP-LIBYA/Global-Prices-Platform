@@ -1,4 +1,6 @@
 import { formatDisplayDate, formatDisplayDateTime } from './formatDate';
+import jsPDF from 'jspdf';
+import { loadArabicPdfFont } from './pdfFonts';
 
 export interface ExportChartDataPoint {
   dateLabel: string;
@@ -22,7 +24,7 @@ export interface ExportOptions {
 }
 
 /**
- * Helper to safely load images for Canvas rendering with CORS.
+ * Helper to safely load images for Canvas rendering with CORS and fallback.
  */
 const loadImage = (url: string): Promise<HTMLImageElement | null> => {
   return new Promise((resolve) => {
@@ -30,7 +32,18 @@ const loadImage = (url: string): Promise<HTMLImageElement | null> => {
     const img = new Image();
     img.crossOrigin = 'anonymous';
     img.onload = () => resolve(img);
-    img.onerror = () => resolve(null);
+    img.onerror = () => {
+      // If remote image failed (e.g. CORS or network), try fallback to local LTNet SVG logo
+      if (url !== '/ltn-logo.svg') {
+        const fallbackImg = new Image();
+        fallbackImg.crossOrigin = 'anonymous';
+        fallbackImg.onload = () => resolve(fallbackImg);
+        fallbackImg.onerror = () => resolve(null);
+        fallbackImg.src = '/ltn-logo.svg';
+      } else {
+        resolve(null);
+      }
+    };
     img.src = url;
   });
 };
@@ -165,7 +178,7 @@ export const renderChartCanvas = async ({
     const watermarkX = chartX + chartWidth / 2 - watermarkWidth / 2;
     const watermarkY = chartY + chartHeight / 2 - watermarkHeight / 2;
 
-    ctx.globalAlpha = 0.05; // Subtle institutional watermark
+    ctx.globalAlpha = 0.07; // Institutional watermark opacity (7%, within 5%-10% range)
     ctx.drawImage(logoImg, watermarkX, watermarkY, watermarkWidth, watermarkHeight);
     ctx.restore();
   }
@@ -424,5 +437,48 @@ export const exportChartToPNG = async (options: ExportOptions) => {
     link.click();
   } catch (error) {
     console.error('Error exporting chart to PNG:', error);
+  }
+};
+
+/**
+ * Exports chart directly to PDF with high-resolution canvas and watermark.
+ */
+export const exportChartToPDF = async (options: ExportOptions) => {
+  try {
+    const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+    const { fontName } = await loadArabicPdfFont(doc);
+    const pageWidth = doc.internal.pageSize.getWidth();
+
+    const canvas = await renderChartCanvas(options);
+    const imgData = canvas.toDataURL('image/png', 1.0);
+    const imgWidth = pageWidth - 20; // 10mm margins
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+    doc.addImage(imgData, 'PNG', 10, 10, imgWidth, Math.min(imgHeight, 180));
+
+    // Footer
+    const pageCount = (doc as any).internal.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFont(fontName, 'normal');
+      doc.setFontSize(9);
+      doc.setTextColor(120, 120, 120);
+      doc.text(
+        `Global Pricing Platform (GPP) - Libya Trade Network - Generated: ${formatDisplayDateTime(new Date())} - Page ${i} of ${pageCount}`,
+        pageWidth / 2,
+        doc.internal.pageSize.getHeight() - 6,
+        { align: 'center' }
+      );
+    }
+
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const cleanFilename = `${options.filename}_${year}-${month}-${day}.pdf`.replace(/\s+/g, '_');
+
+    doc.save(cleanFilename);
+  } catch (error) {
+    console.error('Error exporting chart to PDF:', error);
   }
 };

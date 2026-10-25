@@ -13,6 +13,7 @@ import { exportChartToPNG, renderChartCanvas } from '../utils/exportChart';
 import { formatDisplayDate, formatDisplayDateTime } from '../utils/formatDate';
 import { loadArabicPdfFont } from '../utils/pdfFonts';
 import { aggregateDailyLastPrices, getSectorLabel, DailyAggregatedPoint } from '../utils/dailyPriceAggregator';
+import { ChartWatermark, getPlatformWatermarkUrl } from './ChartWatermark';
 
 type SectorTab = 'energy' | 'metals' | 'commodities' | 'forex' | 'indices' | 'shipping';
 
@@ -316,7 +317,7 @@ export const AnalyticsCharts = () => {
         subtitle: subtitle,
         dateRange: dateRangeStr,
         theme: 'dark',
-        logoUrl: settings.headerLogoUrl || settings.heroLogoUrl || settings.siteLogo || undefined,
+        logoUrl: getPlatformWatermarkUrl(settings),
         language: language as 'ar' | 'en'
       });
     } catch (err) {
@@ -352,7 +353,7 @@ export const AnalyticsCharts = () => {
         subtitle: subtitle,
         dateRange: dateRangeStr,
         theme: 'dark',
-        logoUrl: settings.headerLogoUrl || settings.heroLogoUrl || settings.siteLogo || undefined,
+        logoUrl: getPlatformWatermarkUrl(settings),
         language: language as 'ar' | 'en'
       });
 
@@ -577,15 +578,8 @@ export const AnalyticsCharts = () => {
               ) : (
                 <div className="relative w-full h-full rounded-xl overflow-hidden">
                   
-                  {/* Single Source of Truth Watermark */}
-                  {(settings.headerLogoUrl || settings.heroLogoUrl || settings.siteLogo) && (
-                    <img
-                      src={settings.headerLogoUrl || settings.heroLogoUrl || settings.siteLogo}
-                      alt="watermark"
-                      data-watermark="true"
-                      className="absolute inset-0 m-auto w-36 md:w-56 opacity-5 pointer-events-none select-none z-0"
-                    />
-                  )}
+                  {/* Unified Platform Watermark */}
+                  <ChartWatermark opacity={0.07} />
 
                   {/* Recharts High-Contrast Line Chart */}
                   {isReady && historyChartData.length > 0 && (
